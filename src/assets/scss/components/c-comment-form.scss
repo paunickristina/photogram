@@ -1,0 +1,101 @@
+@import "../settings/_module-settings.scss";
+
+.c-comment-form {
+  height: 4.3rem;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  position: fixed;
+  width: 100%;
+  left: 0;
+  bottom: 4.2rem;
+  border-top: 0.1rem solid rgba(149, 152, 154, 0.5);
+
+  @include breakpoint(desktop) {
+    position: static;
+    width: 43.4rem;
+    height: 5.4rem;
+    margin: 0 auto;
+    background: $white;
+    padding-top: 0.7rem;
+    //padding-bottom: 0.5rem;
+  }
+
+  &-field {
+    padding: 0 1.6rem;
+    display: flex;
+    justify-content: space-between;
+
+    @include breakpoint(desktop) {
+      padding: 0 3.4rem;
+    }
+
+    & > svg {
+      width: 2.8rem;
+      height: 3rem;
+      cursor: pointer;
+
+      @include breakpoint(desktop) {
+        width: 3.2rem;
+        height: 3.4rem;
+      }
+      
+      .cls-1 {
+        fill: none;
+        stroke: #232429;
+        stroke-width: 0.2rem;
+      }
+    }
+
+    & input {
+      width: 22rem;
+      padding-left: 0.5rem;
+      @include fontSizeRem(16, 16);
+      -webkit-appearance: none; 
+      -moz-appearance: none;
+      border: none;
+      background: transparent;
+
+      @include breakpoint(desktop) {
+        width: 29rem;
+      }
+
+      &::-webkit-input-placeholder {
+        color: $gray;
+        opacity: 0.5;
+      }
+      &::-moz-placeholder { 
+        color: $gray;
+        opacity: 0.5;
+      }
+      &:-moz-placeholder { 
+        color: $gray;
+        opacity: 0.5;
+      }
+      &:-ms-input-placeholder { 
+        color: $gray;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &-btn {
+    width: 3rem;
+    height: 3rem;
+    background: $gray;
+    border-radius: 50%;
+
+    @include breakpoint(desktop) {
+      width: 3.3rem;
+      height: 3.3rem;
+      margin-top: 0.2rem;
+    }
+
+    & svg {
+      &.fa-icon {
+        fill: $white;
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+    }
+  }
+}

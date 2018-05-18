@@ -1,0 +1,45 @@
+@import "../settings/_module-settings.scss";
+
+.c-btn {
+    display: inline-block;
+    background: $green;
+    height: 3.3rem;
+    line-height: 3.3rem;
+    padding-left: 7.45rem;
+    padding-right: 7.45rem;
+    border-radius: 3.3rem;
+    color: $white;
+    text-transform: uppercase;
+    @include fontSizeRem(14, 20);
+
+    @include breakpoint(desktop) {
+        height: 4.2rem;
+        line-height: 4.2rem;
+        padding-left: 13.8rem;
+        padding-right: 13.8rem;
+        font-weight: 700;
+    }
+
+    &--small {
+        background: $gray1;
+        @include fontSizeRem(10, 20);
+        height: 2.1rem;
+        line-height: 2.1rem;
+        padding-left: 2.1rem;
+        padding-right: 2.1rem;
+        text-transform: none;
+
+        @include breakpoint(desktop) {
+            height: 3.1rem;
+            line-height: 3.1rem;
+            padding-left: 2.1rem;
+            padding-right: 2.1rem;
+        }
+    }
+
+    &--gray {
+        background: $gray;
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+    }
+}

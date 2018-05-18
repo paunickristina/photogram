@@ -1,0 +1,65 @@
+//check this
+// @import "../settings/_variables.scss";
+//move it to module-components
+@import "../settings/_module-settings.scss";
+
+.c-input {
+    position: relative;
+
+    & input {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid $gray;
+        margin-bottom: 4.75rem;
+        @include fontSizeRem(14, 20);
+        color: $gray;
+        background: transparent;
+        padding-left: 2.9rem;
+        padding-bottom: 0.55rem;
+
+        @include breakpoint(desktop) {
+            padding-left: 3.7rem;
+            padding-bottom: 0.6rem;
+            margin-bottom: 7.1rem;
+        }
+
+        &::-webkit-input-placeholder { 
+            color: $gray;
+        }
+        &::-moz-placeholder { 
+            color: $gray;
+            opacity: 1; 
+        }
+        &:-moz-placeholder { 
+            color: $gray;
+            opacity: 1;
+        }
+        &:-ms-input-placeholder { 
+            color: $gray;
+        }
+    }
+    & svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1.6rem;
+        height: 1.8rem;
+
+        @include breakpoint(desktop) {
+            width: 2.4rem;
+            height: 2.6rem;
+            top: -0.2rem;
+            left: -0.6rem;
+        }
+    }
+    & .invalid {
+        color: $red;
+        position: absolute;
+        bottom: 2.9rem;
+        @include fontSizeRem(10, 16);
+
+        @include breakpoint(desktop) {
+            bottom: 4.8rem;
+        }
+    }
+}
