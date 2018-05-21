@@ -220,7 +220,8 @@
           @include fontSizeRem(10, 16);
 
           & input {
-            // -webkit-appearance: none;
+            // -webkit-appearance: none; 
+            // -moz-appearance: none;
             height: 1.1rem;
             width: 1.1rem;
             outline: 0;

@@ -1,28 +1,28 @@
 <template>
-    <div class="c-likes__wrapper">
-      <div class="c-likes__overflow-hidden">
-        <div class="c-likes__overflow-auto">
-      <div class="c-likes__close" @click="$router.go(-1)">
-        <icon name="times"></icon>
-      </div>
-      <div v-if="likes.length == 0" class="c-likes__no-likes">
-        <p>This post has no likes</p>
-      </div>
-      <div v-for="(like, index) in likes" :key="index" class="c-likes__one-like u-clearfix">
-        <router-link tag="div" :to="{ name: 'user', params: {user_id: userLikeId(index)}}" class="c-likes__one-like-img">
-          <img :src="storage + like.image.avatar" alt="">
-        </router-link>
-        <div class="c-likes__one-like-body">
-          <p><router-link tag="span" :to="{ name: 'user', params: {user_id: userLikeId(index)}}">{{ like.username}}</router-link> liked this post</p>
+  <div class="c-likes__wrapper">
+    <div class="c-likes__overflow-hidden">
+      <div class="c-likes__overflow-auto">
+        <div class="c-likes__close" @click="$router.go(-1)">
+          <icon name="times"></icon>
         </div>
-        <div class="c-likes__btn">
-          <button @click="unfollowUser(index); replaceBtn($event)" v-show="authFollow(index) && !authenticatedUserLike(index)" class="c-btn c-btn--small c-likes__btn--unfol">Unfollow</button>
-          <button @click="followUser(index); replaceBtn($event);" v-show="!authFollow(index) && !authenticatedUserLike(index)" class="c-btn c-btn--small c-btn--gray c-likes__btn--fol">Follow</button>
+        <div v-if="likes.length == 0" class="c-likes__no-likes">
+          <p>This post has no likes</p>
+        </div>
+        <div v-for="(like, index) in likes" :key="index" class="c-likes__one-like u-clearfix">
+          <router-link tag="div" :to="{ name: 'user', params: {user_id: userLikeId(index)}}" class="c-likes__one-like-img">
+            <img :src="storage + like.image.avatar" alt="">
+          </router-link>
+          <div class="c-likes__one-like-body">
+            <p><router-link tag="span" :to="{ name: 'user', params: {user_id: userLikeId(index)}}">{{ like.username}}</router-link> liked this post</p>
+          </div>
+          <div class="c-likes__btn">
+            <button @click="unfollowUser(index); replaceBtn($event)" v-show="authFollow(index) && !authenticatedUserLike(index)" class="c-btn c-btn--small c-likes__btn--unfol">Unfollow</button>
+            <button @click="followUser(index); replaceBtn($event);" v-show="!authFollow(index) && !authenticatedUserLike(index)" class="c-btn c-btn--small c-btn--gray c-likes__btn--fol">Follow</button>
+          </div>
         </div>
       </div>
-      </div>
-      </div>
-    </div> <!-- end .c-likes__wrapper -->
+    </div>
+  </div> <!-- end .c-likes__wrapper -->
 </template>
 
 <script>
@@ -77,8 +77,6 @@
       replaceBtn(e) {
         const $removeBtn = $(e.target)
         const $showBtn = $removeBtn.siblings()
-        console.log($removeBtn)
-        console.log($showBtn)
         $removeBtn.css({'display':'none'})
         $showBtn.css({'display':'block'})
       }
