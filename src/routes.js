@@ -43,6 +43,11 @@ const EditProfile = resolve => {
 		resolve(require('./components/pages/editProfile.vue'))
 	})
 }
+const EditPost = resolve => {
+	require.ensure(['./components/component/editPost.vue'], () => {
+		resolve(require('./components/component/editPost.vue'))
+	})
+}
 const Photo = resolve => {
 	require.ensure(['./components/component/photo.vue'], () => {
 		resolve(require('./components/component/photo.vue'))
@@ -105,7 +110,8 @@ const routes = [
 		children: [
 			{path: '/photo/:post_id', component: Photo, name: 'photo', props: true},
 			{path: '/comments/:post_id', component: Comments, name: 'comments', props: true},
-			{path: '/likes/:post_id', component: Likes, name: 'likes', props: true}
+			{path: '/likes/:post_id', component: Likes, name: 'likes', props: true},
+			{path: '/edit-post/:post_id', component: EditPost, name: 'editPost', props: true}
 		]
 	},
 	{path: '/user/:user_id', component: User, name: 'user', props: true,

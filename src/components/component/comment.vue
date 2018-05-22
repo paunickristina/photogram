@@ -23,7 +23,7 @@
               <svg @click="deleteLike(index)" v-else xmlns="http://www.w3.org/2000/svg" viewBox="4631 1443.165 20.669 20.141">
                 <path id="Path_111" data-name="Path 111" class="cls-2" d="M19.339,1.1A4.1,4.1,0,0,0,13.823.959h0a5.493,5.493,0,0,1-3.337,1.318A5.225,5.225,0,0,1,6.809.959h0a4.166,4.166,0,0,0-5.448.069,4.366,4.366,0,0,0-.409,5.9h0L10.35,20.1,19.816,6.854A4.416,4.416,0,0,0,19.339,1.1Z" transform="translate(4631.004 1443.205)"/>
               </svg>
-              <p @click="deleteComment(index)" v-if="userComment(index)">delete</p>
+              <p @click="deleteComment(index)" v-if="userComment(index) || editPostPage">delete</p>
             </div>
           </div>
         </div> <!-- end .c-comment__overflow-auto -->
@@ -49,6 +49,9 @@
       },
       storage() {
         return 'http://54.37.227.57/storage/'
+      },
+      editPostPage() {
+        return this.$route.name === 'editPost'
       }
     },
     methods: {

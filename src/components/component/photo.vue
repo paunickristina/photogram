@@ -9,7 +9,7 @@
           </div>
           <p>{{ post.username }}</p>
         </router-link>
-        <button class="c-btn c-btn--small" v-if="buttonShow">Edit Post</button>
+        <router-link tag="button" :to="{ name: 'editPost', params: {post_id: post_id} }" class="c-btn c-btn--small" v-if="buttonShow">Edit Post</router-link>
         <div class="c-photo__close" @click="$router.go(-1)">
           <icon name="times"></icon>
         </div>
@@ -40,17 +40,20 @@
         </div>
         <div class="c-photo__likes u-clearfix">
           <div class="c-photo__likes-left">
-            <svg viewBox="6248.998 -476.065 22.901 23.092">
-                <path id="Path_32" data-name="Path 32" class="cls-1" d="M19.339,1.1A4.1,4.1,0,0,0,13.823.959h0a5.493,5.493,0,0,1-3.337,1.318A5.225,5.225,0,0,1,6.809.959h0a4.166,4.166,0,0,0-5.448.069,4.366,4.366,0,0,0-.409,5.9h0L10.35,20.1,19.816,6.854A4.416,4.416,0,0,0,19.339,1.1Z" transform="translate(6250.004 -474.795)"/>
+            <svg @click="postLike" v-if="authLike()" viewBox="6248.998 -476.065 22.901 23.092">
+              <path id="Path_32" data-name="Path 32" class="cls-1" d="M19.339,1.1A4.1,4.1,0,0,0,13.823.959h0a5.493,5.493,0,0,1-3.337,1.318A5.225,5.225,0,0,1,6.809.959h0a4.166,4.166,0,0,0-5.448.069,4.366,4.366,0,0,0-.409,5.9h0L10.35,20.1,19.816,6.854A4.416,4.416,0,0,0,19.339,1.1Z" transform="translate(6250.004 -474.795)"/>
+            </svg>
+            <svg @click="deleteLike" v-else xmlns="http://www.w3.org/2000/svg" viewBox="4631 1443.165 20.669 20.141">
+              <path id="Path_111" data-name="Path 111" class="cls-2" d="M19.339,1.1A4.1,4.1,0,0,0,13.823.959h0a5.493,5.493,0,0,1-3.337,1.318A5.225,5.225,0,0,1,6.809.959h0a4.166,4.166,0,0,0-5.448.069,4.366,4.366,0,0,0-.409,5.9h0L10.35,20.1,19.816,6.854A4.416,4.416,0,0,0,19.339,1.1Z" transform="translate(4631.004 1443.205)"/>
             </svg>
             <svg @click="showCommentForm" viewBox="6284.636 -477 25.678 23.277">
-                <path id="Union_7" data-name="Union 7" class="cls-1" d="M4.028,13.662a9.6,9.6,0,1,1,3.278,3.861L0,20.306Z" transform="translate(6287 -476)"/>
+              <path id="Union_7" data-name="Union 7" class="cls-1" d="M4.028,13.662a9.6,9.6,0,1,1,3.278,3.861L0,20.306Z" transform="translate(6287 -476)"/>
             </svg>
           </div>
-          <div class="c-photo__likes-right">
+          <router-link tag="div" :to="{ name: 'likes', params: {post_id: post_id} }" class="c-photo__likes-right">
             <img src="../../assets/images/heart.png" alt="">
             <p>{{ post.likes_count}} likes</p>
-          </div>
+          </router-link>
         </div>
         <div class="c-photo__comments">
           <div class="c-photo__comments-comment u-clearfix" v-if="post.description">
@@ -127,12 +130,33 @@
         )
         .then(response => {
           console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
         })
         .catch(error => console.log(error))
 
         $('.c-photo__wrapper').find('.c-photo__form').removeClass('active')
       },
+      postLike() {
+        axios.post('/likes', 
+          {likable_id: this.post_id, likable_type: 1},
+          {headers: {'Authorization': 'Bearer '+ this.token}}
+        )
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => console.log(error))
+      },
+      deleteLike() {
+        const like_id = this.post.auth_like_id
+        axios.delete('/likes/' + like_id, {headers: {'Authorization': 'Bearer '+ this.token}}
+        )
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => console.log(error))
+      },
+      authLike() {
+        return this.post.auth_like_id == null
+      }
     },
     beforeMount() {
       axios.get('/posts/' + this.post_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
@@ -263,12 +287,13 @@
             width: 32rem;
             height: 33rem;
             position: relative;
-            bottom: 3rem;
+            bottom: 1rem;
             display: block;
 
             @include breakpoint(desktop) {
               width: 50rem;
               height: 50rem;
+              bottom: 3rem;
             }
         }
       }
@@ -304,14 +329,18 @@
               margin-left: 1rem;
           }
           
-          .cls-1 {
+          & .cls-1 {
               fill: none;
-              stroke: #232429;
+              stroke: $gray;
               stroke-width: 0.2rem;
 
               @include breakpoint(desktop) {
                 stroke: #eee;
               }
+          }
+
+          & .cls-2 {
+            fill: $green;
           }
         }
 
@@ -334,6 +363,7 @@
         float: right;
         padding-top: 0.9rem;
         margin-right: 2rem;
+        cursor: pointer;
 
         @include breakpoint(desktop) {
             padding-top: 0.3rem;

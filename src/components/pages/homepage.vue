@@ -1,7 +1,7 @@
 <template>
   <section class="p-homepage">
-    <app-header :title='title' v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint)"></app-header>
-    <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage) || !breakpoint">
+    <app-header :title='title' v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint)"></app-header>
+    <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
       <app-post :posts='posts'></app-post>
     </section>
     <router-view></router-view>
@@ -36,6 +36,9 @@
       },
       likesPage() {
         return this.$route.name === 'likes'
+      },
+      editPostPage() {
+        return this.$route.name === 'editPost'
       },
       breakpoint() {
         const windowWidth = $(window).width()

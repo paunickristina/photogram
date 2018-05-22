@@ -105,7 +105,6 @@
         else {
           $post.addClass('single')
         }
-        console.log('test')
       },
       multi() {
         const $windowWidth = $(window).width()
@@ -117,7 +116,6 @@
         else {
           $post.removeClass('single')
         }
-        console.log('test1')
       }
     },
     beforeMount() {

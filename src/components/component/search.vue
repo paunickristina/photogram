@@ -20,18 +20,7 @@
 				</ul>
 			</div>
 			<div class="c-search__people">
-				<div v-for="(user, index) in users" :key="index" class="c-search__people-one u-clearfix">
-					<router-link tag="div" :to="{ name: 'user', params: {user_id: user.id}}" class="c-search__people-one-img">
-						<img :src="storage + user.image.avatar" alt="">
-					</router-link>
-					<div class="c-search__people-one-body">
-						<p>{{ user.username}}</p>
-					</div>
-					<div class="c-search__btn">
-						<button @click="unfollowUser(index); replaceBtn($event)" v-show="authFollow(index) && !authenticatedUser(index)" class="c-btn c-btn--small c-likes__btn--unfol">Unfollow</button>
-						<button @click="followUser(index); replaceBtn($event);" v-show="!authFollow(index) && !authenticatedUser(index)" class="c-btn c-btn--small c-btn--gray c-likes__btn--fol">Follow</button>
-					</div>
-				</div>
+				<app-follower :followers="followers"></app-follower>
 			</div>
 			<div class="c-search__tags">
 				<div v-for="(tag, index) in tags" :key="index" class="c-search__tags-one">
@@ -46,6 +35,7 @@
 <script>
 	import Header from './header.vue'
 	import Footer from './footer.vue'
+	import Follower from './follower.vue'
 	import axios from 'axios'
 	import { minLength } from 'vuelidate/lib/validators'
 
@@ -55,7 +45,7 @@
 				title: 'Search',
 				query: '',
 				query_tags: '',
-				users: [],
+				followers: [],
 				tags: []
 			}
 		},
@@ -76,10 +66,9 @@
       }
 		},
 		watch: {
-			//delete results when form is empty
 			query(val) {
 				if(val == '') {
-					this.users = []
+					this.followers = []
 				}
 			},
 			query_tags(val) {
@@ -94,8 +83,7 @@
         .then(response => {
 					console.log(response)
 					for(let i = 0; i < response.data.data.length; i++) {
-						this.users.push(response.data.data[i])
-						console.log(this.users)
+						this.followers.push(response.data.data[i])
 					}
         })
         .catch(error => console.log(error))
@@ -111,39 +99,6 @@
         })
         .catch(error => console.log(error))
 			},
-			authFollow(index) {
-				return this.users[index].auth_follow
-			},
-			authenticatedUser(index) {
-				return this.users[index].id == this.$store.getters.authenticatedUser
-			},
-			unfollowUser(index) {
-        const user_id = this.users[index].id
-        axios.delete('/followers/' + user_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
-        .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
-        })
-        .catch(error => console.log(error))
-			},
-			followUser(index) {
-        const user_id = this.users[index].id
-        axios.post('/followers', 
-          {user_id: user_id},
-          {headers: {'Authorization': 'Bearer '+ this.token}}
-        )
-        .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
-        })
-        .catch(error => console.log(error))
-			},
-			replaceBtn(e) {
-				const $removeBtn = $(e.target)
-        const $showBtn = $removeBtn.siblings()
-        $removeBtn.css({'display':'none'})
-        $showBtn.css({'display':'block'})
-			},
 			toggleBtnClass(e) {
 				const $actBtn = $(e.target)
 				const $inactBtn = $actBtn.siblings()
@@ -158,8 +113,7 @@
 				$people.css({'display':'none'})
 				$tags.css({'display':'block'})
 				$formPeople.css({'display':'none'})
-				$formTags.css({'display':'block'})
-				this.users = []
+				$formTags.css({'display':'block'}) 
 			},
 			removeTags() {
 				const $people = $('.c-search__people')
@@ -174,7 +128,8 @@
 		},
 		components: {
 			appHeader: Header,
-			appFooter: Footer
+			appFooter: Footer,
+			appFollower: Follower
 		}
 	}
 </script>
@@ -278,63 +233,11 @@
 
 		&__people {
 			margin-top: 4.5rem;
-			padding: 0 1.8rem;
+			padding: 0 1.8rem 0 1.7rem;
 
 			@include breakpoint(desktop) {
 				margin-top: 5.7rem;
 				padding: 0;
-			}
-
-			&-one {
-				margin-bottom: 2.4rem;
-				padding-left: 1%;
-
-				@include breakpoint(desktop) {
-					margin-bottom: 3.8rem;
-				}
-
-				&-img {
-					width: 14%;  
-					height: 3.8rem;
-					float: left;
-					margin-right: 2.7%;
-
-					@include breakpoint(desktop) {
-						width: 8.4%; 
-						height: 4.5rem;
-						margin-right: 2%;
-						cursor: pointer;
-					}
-
-					& img {
-						width: 3.8rem;
-						height: 3.8rem;
-						border-radius: 50%;
-
-						@include breakpoint(desktop) {
-							width: 4.5rem;
-							height: 4.5rem;
-						}
-					}
-				}
-
-				&-body {
-					margin-top: 1.2rem;
-					margin-right: 2%;
-					width: 56%;
-					float: left;
-
-					@include breakpoint(desktop) {
-						padding-right: 3.2rem;
-						width: 64%;
-					}
-
-					& p {
-						@include fontSizeRem(14, 16);
-						color: $gray;
-						margin-bottom: 0.8rem;
-					}
-				}
 			}
 		}
 		
