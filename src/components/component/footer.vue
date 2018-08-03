@@ -15,7 +15,8 @@
 			</svg>
 		</div>
 		<router-link class="c-footer__profile" :to="{ name: 'user', params: {user_id: userId}}">
-			<img :src="userImage" alt="">
+			<!-- uncomment this -->
+			<!-- <img :src="userImage" alt=""> -->
 		</router-link>
   </section>
 </template>

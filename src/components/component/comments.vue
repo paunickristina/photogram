@@ -1,5 +1,5 @@
 <template>
-  <div class="p-comments">
+  <div class="p-comments" v-if="loading">
     <app-header :title="title" v-if="breakpoint"></app-header>
     <div class="p-comments__comment">
       <app-comment :comments="comments" :comment_body="comment_body" :reply_username="reply_username" @event="reply_username = $event"></app-comment>
@@ -30,6 +30,7 @@
     props: ['post_id'],
     data() {
       return {
+        loading: false,
         title: 'Comments',
         comments: [],
         reply_username: '',
@@ -51,6 +52,19 @@
       }
     },
     methods: {
+      getComments() {
+        axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
+          .then(response => {
+            console.log(response)
+            for(let i = 0; i < response.data.data.length; i++) {
+              this.comments.push(response.data.data[i])
+            }
+            this.$store.dispatch('getAllComments', this.comments)
+            console.log(this.comments)
+            this.loading = true
+          })
+          .catch(error => console.log(error))
+      },
       postComment() {
         axios.post('/comments', 
           {post_id: this.post_id, reply_username: this.reply_username, body: this.comment_body},
@@ -66,17 +80,20 @@
         $input.blur().val('');
       }
     },
+    created() {
+      this.getComments()
+    },
 		beforeMount() {
-			axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
-        .then(response => {
-          console.log(response)
-          for(let i = 0; i < response.data.data.length; i++) {
-            this.comments.push(response.data.data[i])
-          }
-          this.$store.dispatch('getAllComments', this.comments)
-          console.log(this.comments)
-        })
-        .catch(error => console.log(error))
+			// axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
+      //   .then(response => {
+      //     console.log(response)
+      //     for(let i = 0; i < response.data.data.length; i++) {
+      //       this.comments.push(response.data.data[i])
+      //     }
+      //     this.$store.dispatch('getAllComments', this.comments)
+      //     console.log(this.comments)
+      //   })
+      //   .catch(error => console.log(error))
     },
     components: {
       appHeader: Header,

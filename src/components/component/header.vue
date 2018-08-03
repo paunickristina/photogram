@@ -25,18 +25,19 @@
               </svg>
             </router-link>
             <router-link tag="div" class="c-header__left-profile" :to="{ name: 'user', params: {user_id: userId}}">
-              <img :src="userImage" alt="">
+              <!-- uncomment this -->
+              <!-- <img :src="userImage" alt=""> -->
             </router-link>
             <div class="c-header__left-upload">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="2837.992 1487.592 14.439 14.439">
                 <path id="Union_49" data-name="Union 49" class="cls-1" d="M6.353,13.573V8.086H.867a.866.866,0,1,1,0-1.732H6.353V.867a.866.866,0,1,1,1.732,0V6.353h5.487a.866.866,0,0,1,0,1.732H8.086v5.487a.866.866,0,0,1-1.732,0Z" transform="translate(2837.992 1487.592)"/>
               </svg>
             </div>
-            <div class="c-header__left-notif">
+            <router-link tag="div" :to="{ name: 'notification'}" class="c-header__left-notif">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="6304.658 -988.421 18.607 17.74">
                 <path id="Path_22" data-name="Path 22" class="cls-1" d="M33.212,19.862a3.731,3.731,0,0,0-4.948-.122h0A4.972,4.972,0,0,1,25.27,20.9a4.733,4.733,0,0,1-3.3-1.161h0a3.789,3.789,0,0,0-4.887.061,3.737,3.737,0,0,0-.428,5.192h0L25.087,36.6l8.491-11.668A3.7,3.7,0,0,0,33.212,19.862Z" transform="translate(6288.853 -1007.282)"/>
               </svg>
-            </div>
+            </router-link>
           </div>
           <h1 v-if="breakpoint && !homepage">{{ title }}</h1>
           <h1 v-if="!breakpoint || homepage"><span>photo</span>gram</h1>
@@ -51,7 +52,7 @@
               </g>
             </svg>
           </router-link>
-          <div class="c-header__notif">
+          <router-link tag="div" :to="{ name: 'notification'}" class="c-header__notif">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                   viewBox="0 0 438.536 438.536" style="enable-background:new 0 0 438.536 438.536;"
                   xml:space="preserve">
@@ -83,7 +84,7 @@
                 </g>
               </g>
             </svg>
-          </div>
+          </router-link>
         </div> <!-- end .c-header__wrap -->
     </div> <!-- end .main-wrapper -->
   </div> <!-- end .c-header -->
@@ -91,13 +92,14 @@
 
 <script>
   import axios from 'axios';
+  // import { mapState } from 'vuex';
   
   export default {
     props: ['title'],
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
+      // token() {
+      //   return this.$store.getters.isAuthenticated
+      // },
       homepage() {
         return this.$route.name === 'homepage'
       },
@@ -111,7 +113,10 @@
         const windowWidth = $(window).width()
         const breakpointValue = 768
         return windowWidth < breakpointValue
-      }
+      },
+      // ...mapState({
+      //   token: 'token' //check
+      // })
     }
   }
 </script>

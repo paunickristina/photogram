@@ -1,5 +1,5 @@
 <template>
-  <div class="p-likes">
+  <div class="p-likes" v-if="loading">
     <app-header :title="title" ></app-header>
     <div class="p-likes__like">
       <div class="p-likes__like-wrapper">
@@ -25,6 +25,7 @@
     props: ['post_id'],
     data() {
       return {
+        loading: false,
         title: 'Likes',
         followers: [],
         amount: 12,
@@ -36,16 +37,33 @@
         return this.$store.getters.isAuthenticated
       }
     },
+    methods: {
+      getLikes() {
+        axios.get('/likes', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {likable_id: this.post_id, likable_type: 1, page: this.page, amount: this.amount}})
+          .then(response => {
+            console.log(response)
+            for(let i = 0; i < response.data.data.length; i++) {
+              this.followers.push(response.data.data[i])
+            }
+            this.$store.dispatch('getAllLikes', this.followers)
+            this.loading = true
+          })
+          .catch(error => console.log(error))
+      }
+    },
+    created() {
+      this.getLikes()
+    },
     beforeMount() {
-      axios.get('/likes', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {likable_id: this.post_id, likable_type: 1, page: this.page, amount: this.amount}})
-        .then(response => {
-          console.log(response)
-          for(let i = 0; i < response.data.data.length; i++) {
-            this.followers.push(response.data.data[i])
-          }
-          this.$store.dispatch('getAllLikes', this.followers)
-        })
-        .catch(error => console.log(error))
+      // axios.get('/likes', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {likable_id: this.post_id, likable_type: 1, page: this.page, amount: this.amount}})
+      //   .then(response => {
+      //     console.log(response)
+      //     for(let i = 0; i < response.data.data.length; i++) {
+      //       this.followers.push(response.data.data[i])
+      //     }
+      //     this.$store.dispatch('getAllLikes', this.followers)
+      //   })
+      //   .catch(error => console.log(error))
     },
     components: {
       appHeader: Header,

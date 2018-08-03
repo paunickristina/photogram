@@ -68,6 +68,11 @@ const Search = resolve => {
 		resolve(require('./components/component/search.vue'))
 	})
 }
+const Notification = resolve => {
+	require.ensure(['./components/component/notification.vue'], () => {
+		resolve(require('./components/component/notification.vue'))
+	})
+}
 
 
 Vue.use(VueRouter)
@@ -135,6 +140,16 @@ const routes = [
 		},
 	},
 	{path: '/search', component: Search, name: 'search',
+		beforeEnter(to, from, next) {
+			if(store.getters.isAuthenticated || localStorage.getItem('token')) {
+				next()
+			}
+			else {
+				next('/login')
+			}
+		},
+	},
+	{path: '/notification', component: Notification, name: 'notification',
 		beforeEnter(to, from, next) {
 			if(store.getters.isAuthenticated || localStorage.getItem('token')) {
 				next()

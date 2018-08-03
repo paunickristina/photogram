@@ -1,11 +1,11 @@
 <template>
-	<section class="p-user">
+	<section class="p-user" v-if="loading">
     <div class="main-wrapper">
       <app-header :title="user.username"></app-header>
       <div class="p-user__about">
         <div class="p-user__about-img">
           <p>{{ user.username }}</p>
-          <img :src="image" alt="">
+          <img :src="storage + user.image.profile" alt="">
         </div>
         <div class="p-user__about-count">
           <p>{{ user.posts_count }}</p>
@@ -61,13 +61,12 @@
 		props: ['user_id'],
     data() {
       return {
+        loading: false,
         user: {},
         title: '',
         posts: [],
         amount: 12,
-        page: 1,
-        //check this
-        image: ''
+        page: 1
       }
     },
     computed: {
@@ -79,12 +78,10 @@
       },
       buttonShow() {
         return this.authenticatedUser == this.user_id
-      }
-    },
-    mounted() {
-      // console.log(this.authenticatedUser)
-      // console.log(this.user_id)
-      // console.log(this.buttonShow)
+      },
+      storage() {
+        return 'http://54.37.227.57/storage/'
+      },
     },
     components: {
       appHeader: Header,
@@ -92,6 +89,28 @@
       appPost: Post
     },
     methods: {
+      getUser() {
+        axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
+        .then(response => {
+          console.log(response)
+          this.user = response.data.data
+          this.title = response.data.data.username
+          this.loading = true
+        })
+        .catch(error => console.log(error))
+      },
+      getUsersPosts() {
+        axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
+        .then(response => {
+          console.log(response)
+          for(let i = 0; i < response.data.data.length; i++) {
+            this.posts.push(response.data.data[i])
+          }
+          this.$store.dispatch('getAllPosts', this.posts)
+          this.loading = true
+        })
+        .catch(error => console.log(error))
+      },
       logOut() {
         this.$store.dispatch('logOut')
       },
@@ -118,31 +137,35 @@
         }
       }
     },
+    created() {
+      this.getUser()
+      this.getUsersPosts()
+    },
     beforeMount() {
-      axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
-        .then(response => {
-          console.log(response)
-          // const data = response.data.data
-          this.user = response.data.data
-          this.title = response.data.data.username
-          //check this
-          this.image = 'http://54.37.227.57/storage/' + response.data.data.image.profile
-          console.log(this.user)
-          console.log(this.user.image)
-        })
-        .catch(error => console.log(error))
+      // axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
+      //   .then(response => {
+      //     console.log(response)
+      //     // const data = response.data.data
+      //     this.user = response.data.data
+      //     this.title = response.data.data.username
+      //     //check this
+      //     // this.image = 'http://54.37.227.57/storage/' + response.data.data.image.profile
+      //     console.log(this.user)
+      //     console.log(this.user.image)
+      //   })
+      //   .catch(error => console.log(error))
 
-      axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
-        .then(response => {
-          console.log(response)
-          for(let i = 0; i < response.data.data.length; i++) {
-            this.posts.push(response.data.data[i])
-          }
-          // console.log(this.posts)
-          //check this
-          this.$store.dispatch('getAllPosts', this.posts)
-        })
-        .catch(error => console.log(error))
+      // axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
+      //   .then(response => {
+      //     console.log(response)
+      //     for(let i = 0; i < response.data.data.length; i++) {
+      //       this.posts.push(response.data.data[i])
+      //     }
+      //     // console.log(this.posts)
+      //     //check this
+      //     this.$store.dispatch('getAllPosts', this.posts)
+      //   })
+      //   .catch(error => console.log(error))
     }
 	}
     
@@ -336,5 +359,3 @@
     }
   }
 </style>
-
-

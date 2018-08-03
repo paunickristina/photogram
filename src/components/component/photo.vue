@@ -1,5 +1,5 @@
 <template>
-  <div class="c-photo">
+  <div class="c-photo" v-if="loading">
     <app-header :title='title' v-if="breakpoint"></app-header>
     <article class="c-photo__single">
       <div class="c-photo__wrapper">
@@ -82,12 +82,13 @@
 <script>
   import Header from './header.vue'
   import axios from 'axios'
+  import { mapState } from 'vuex'
   
   export default {
-    // props: ['posts', 'post_id'],
     props: ['post_id'],
     data() {
       return {
+        loading: false,
         title: 'Photo',
         post: {},
         reply_username: '',
@@ -95,9 +96,9 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
+      // token() {
+      //   return this.$store.getters.isAuthenticated
+      // },
       breakpoint() {
         const windowWidth = $(window).width()
         const breakpointValue = 768
@@ -111,9 +112,26 @@
       },
       buttonShow() {
         return this.authenticatedUser == this.post.user_id
-      }
+      },
+      ...mapState({
+        token: state => state.token //check
+      })
     },
     methods: {
+      getPost() {
+        // this.post = {}
+        // this.loading = false
+        axios.get('/posts/' + this.post_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
+          .then(response => {
+            console.log(response)
+            this.post = response.data.data
+            //console.log(this.post)
+            this.$store.dispatch('getOnePost', this.post)
+            this.loading = true
+          })
+          .catch(error => console.log(error))
+          console.log(this.post_id)
+      },
       showCommentForm(e) {
         const $comment = $(e.target);
         const $inputField = $comment.parents('.c-photo__wrapper').find('.c-photo__form').find('input');
@@ -158,16 +176,23 @@
         return this.post.auth_like_id == null
       }
     },
+    watch: {
+      // '$route':'fetchData'
+    },
+    created() {
+      this.getPost()
+    },
     beforeMount() {
-      axios.get('/posts/' + this.post_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
-      .then(response => {
-        console.log(response)
-        this.post = response.data.data
-        console.log(this.post)
-        this.$store.dispatch('getOnePost', this.post)
-      })
-      .catch(error => console.log(error))
-      console.log(this.post_id)
+      // axios.get('/posts/' + this.post_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
+      // .then(response => {
+      //   console.log(response)
+      //   this.post = response.data.data
+      //   console.log(this.post)
+      //   this.$store.dispatch('getOnePost', this.post)
+      // })
+      // .catch(error => console.log(error))
+      // console.log(this.post_id)
+      // this.fetchData()
     },
     components: {
       appHeader: Header
@@ -524,7 +549,12 @@
       top: 32.9rem;
       z-index: 1;
       background: $white;
-      display: none;
+      -webkit-transition: 0.3s all ease-in;
+  		-moz-transition: 0.3s all ease-in;
+  		-o-transition: 0.3s all ease-in;
+		  transition: 0.3s all ease-in;
+      visibility: hidden;
+      opacity: 0;
 
       @include breakpoint(desktop) {
         border-bottom: none;
@@ -535,7 +565,8 @@
       }
 
       &.active {
-        display: block;
+        visibility: visible;
+        opacity: 1;
       }
 
       &.userPage {
