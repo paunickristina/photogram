@@ -74,15 +74,15 @@ const actions = {
     }
 }
 const getters = {
-    isAuthenticated(state) {
-        return state.token
-    },
-    authenticatedUser(state) {
-        return state.userId
-    },
-    authUserImage(state) {
-        return state.userImage
-    }
+    // isAuthenticated(state) {
+    //     return state.token
+    // },
+    // authenticatedUser(state) {
+    //     return state.userId
+    // },
+    // authUserImage(state) {
+    //     return state.userImage
+    // }
 }
 export default {
     state,

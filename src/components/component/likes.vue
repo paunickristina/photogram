@@ -20,6 +20,7 @@
   import Header from './header.vue'
   import Follower from './follower.vue'
   import axios from 'axios'
+  import { mapState } from 'vuex'
 
   export default {
     props: ['post_id'],
@@ -33,9 +34,9 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      }
+      ...mapState({
+        token: state => state.authentication.token
+      })
     },
     methods: {
       getLikes() {
@@ -53,17 +54,6 @@
     },
     created() {
       this.getLikes()
-    },
-    beforeMount() {
-      // axios.get('/likes', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {likable_id: this.post_id, likable_type: 1, page: this.page, amount: this.amount}})
-      //   .then(response => {
-      //     console.log(response)
-      //     for(let i = 0; i < response.data.data.length; i++) {
-      //       this.followers.push(response.data.data[i])
-      //     }
-      //     this.$store.dispatch('getAllLikes', this.followers)
-      //   })
-      //   .catch(error => console.log(error))
     },
     components: {
       appHeader: Header,

@@ -22,21 +22,18 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import axios from 'axios'
+  import { mapState } from 'vuex'
 
 	export default {
 		computed: {
-			token() {
-				return this.$store.getters.isAuthenticated
-			},
+			...mapState({
+				token: state => state.authentication.token,
+				userId: state => state.authentication.userId,
+				userImage: state => state.authentication.userImage
+			}),
 			homepage() {
 				return this.$route.path === '/homepage'
-			},
-			userId() {
-				return this.$store.getters.authenticatedUser
-			},
-			userImage() {
-				return this.$store.getters.authUserImage
 			}
 		}
 	}

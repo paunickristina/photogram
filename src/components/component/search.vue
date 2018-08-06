@@ -38,6 +38,7 @@
 	import Follower from './follower.vue'
 	import axios from 'axios'
 	import { minLength } from 'vuelidate/lib/validators'
+  import { mapState } from 'vuex'
 
 	export default {
 		data() {
@@ -58,12 +59,12 @@
 			}
 		},
 		computed: {
-			token() {
-        return this.$store.getters.isAuthenticated
-			},
-			storage() {
-        return 'http://54.37.227.57/storage/'
-      }
+			...mapState({
+        token: state => state.authentication.token
+      }),
+			// storage() {
+			// 	return 'http://54.37.227.57/storage/'
+			// }
 		},
 		watch: {
 			query(val) {
@@ -80,24 +81,24 @@
 		methods: {
 			getPeople() {
 				axios.get('/search/users', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query}})
-        .then(response => {
-					console.log(response)
-					for(let i = 0; i < response.data.data.length; i++) {
-						this.followers.push(response.data.data[i])
-					}
-        })
-        .catch(error => console.log(error))
+					.then(response => {
+								console.log(response)
+								for(let i = 0; i < response.data.data.length; i++) {
+									this.followers.push(response.data.data[i])
+								}
+					})
+					.catch(error => console.log(error))
 			},
 			getTags() {
 				axios.get('/search/hashtags', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query_tags}})
-        .then(response => {
-					console.log(response)
-					for(let i = 0; i < response.data.data.length; i++) {
-						this.tags.push(response.data.data[i])
-						console.log(this.tags)
-					}
-        })
-        .catch(error => console.log(error))
+					.then(response => {
+								console.log(response)
+								for(let i = 0; i < response.data.data.length; i++) {
+									this.tags.push(response.data.data[i])
+									console.log(this.tags)
+								}
+					})
+					.catch(error => console.log(error))
 			},
 			toggleBtnClass(e) {
 				const $actBtn = $(e.target)

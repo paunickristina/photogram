@@ -25,6 +25,8 @@
   import Header from './header.vue'
   import Comment from './comment.vue'
   import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { breakpoint } from '../../functions.js'
   
 	export default {
     props: ['post_id'],
@@ -40,16 +42,12 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
-      breakpoint() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
-        return windowWidth < breakpointValue
-      },
-      reply() {
-      }
+      ...mapState({
+        token: state => state.authentication.token
+      }),
+      breakpoint,
+      // reply() {
+      // }
     },
     methods: {
       getComments() {
@@ -82,18 +80,6 @@
     },
     created() {
       this.getComments()
-    },
-		beforeMount() {
-			// axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
-      //   .then(response => {
-      //     console.log(response)
-      //     for(let i = 0; i < response.data.data.length; i++) {
-      //       this.comments.push(response.data.data[i])
-      //     }
-      //     this.$store.dispatch('getAllComments', this.comments)
-      //     console.log(this.comments)
-      //   })
-      //   .catch(error => console.log(error))
     },
     components: {
       appHeader: Header,

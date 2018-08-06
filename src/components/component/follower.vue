@@ -20,19 +20,19 @@
 
 <script>
   import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { storage } from '../../functions.js'
 
   export default {
     props: ['followers'],
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
-      storage() {
-        return 'http://54.37.227.57/storage/'
-      },
+      ...mapState({
+        token: state => state.authentication.token
+      }),
       likesPage() {
         return this.$route.name === 'likes'
-      }
+      },
+      storage
     },
     methods: {
       authFollow(index) {

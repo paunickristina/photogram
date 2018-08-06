@@ -23,13 +23,11 @@
 </template>
 
 <script>
+	import { breakpoint } from '../../functions.js'
+
 	export default {
 		computed: {
-			breakpoint() {
-				const windowWidth = $(window).width()
-				const breakpointValue = 768
-				return windowWidth < breakpointValue
-			}
+			breakpoint
 		}
 	}
 </script>

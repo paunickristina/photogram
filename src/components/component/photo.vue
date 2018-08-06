@@ -83,6 +83,7 @@
   import Header from './header.vue'
   import axios from 'axios'
   import { mapState } from 'vuex'
+  import { breakpoint, storage } from '../../functions.js'
   
   export default {
     props: ['post_id'],
@@ -96,26 +97,15 @@
       }
     },
     computed: {
-      // token() {
-      //   return this.$store.getters.isAuthenticated
-      // },
-      breakpoint() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
-        return windowWidth < breakpointValue
-      },
-      storage() {
-        return 'http://54.37.227.57/storage/'
-      },
-      authenticatedUser() {
-        return this.$store.getters.authenticatedUser
-      },
-      buttonShow() {
-        return this.authenticatedUser == this.post.user_id
-      },
       ...mapState({
-        token: state => state.token //check
-      })
+        token: state => state.authentication.token,
+        userId: state => state.authentication.userId
+      }),
+      buttonShow() {
+        return this.userId == this.post.user_id
+      },
+      breakpoint,
+      storage
     },
     methods: {
       getPost() {
@@ -181,18 +171,6 @@
     },
     created() {
       this.getPost()
-    },
-    beforeMount() {
-      // axios.get('/posts/' + this.post_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
-      // .then(response => {
-      //   console.log(response)
-      //   this.post = response.data.data
-      //   console.log(this.post)
-      //   this.$store.dispatch('getOnePost', this.post)
-      // })
-      // .catch(error => console.log(error))
-      // console.log(this.post_id)
-      // this.fetchData()
     },
     components: {
       appHeader: Header

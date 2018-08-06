@@ -5,7 +5,8 @@
       <div class="p-user__about">
         <div class="p-user__about-img">
           <p>{{ user.username }}</p>
-          <img :src="storage + user.image.profile" alt="">
+          <!-- uncomment this -->
+          <!-- <img :src="storage + user.image.profile" alt=""> -->
         </div>
         <div class="p-user__about-count">
           <p>{{ user.posts_count }}</p>
@@ -56,6 +57,8 @@
   import Footer from './footer.vue' 
   import Post from './post.vue'
   import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { storage } from '../../functions.js'
   
 	export default {
 		props: ['user_id'],
@@ -70,18 +73,17 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
-      authenticatedUser() {
-        return this.$store.getters.authenticatedUser
-      },
+      ...mapState({
+        token: state => state.authentication.token,
+        userId: state => state.authentication.userId
+      }),
       buttonShow() {
-        return this.authenticatedUser == this.user_id
+        return this.userId == this.user_id
       },
-      storage() {
-        return 'http://54.37.227.57/storage/'
-      },
+      // storage() {
+      //   return 'http://54.37.227.57/storage/'
+      // },
+      storage
     },
     components: {
       appHeader: Header,

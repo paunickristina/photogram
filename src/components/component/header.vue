@@ -91,32 +91,21 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  // import { mapState } from 'vuex';
+  import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { breakpoint } from '../../functions.js'
   
   export default {
     props: ['title'],
     computed: {
-      // token() {
-      //   return this.$store.getters.isAuthenticated
-      // },
+      ...mapState({
+        userId: state => state.authentication.userId,
+        userImage: state => state.authentication.userImage
+      }),
       homepage() {
         return this.$route.name === 'homepage'
       },
-      userId() {
-        return this.$store.getters.authenticatedUser
-      },
-      userImage() {
-        return this.$store.getters.authUserImage
-      },
-      breakpoint() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
-        return windowWidth < breakpointValue
-      },
-      // ...mapState({
-      //   token: 'token' //check
-      // })
+      breakpoint
     }
   }
 </script>

@@ -10,10 +10,12 @@
 </template>
 
 <script>
-  import Footer from '../component/footer.vue'; 
-  import Header from '../component/header.vue';
-  import Post from '../component/post.vue'; 
-  import axios from 'axios';
+  import Footer from '../component/footer.vue'
+  import Header from '../component/header.vue'
+  import Post from '../component/post.vue'
+  import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { breakpoint } from '../../functions.js'
     
   export default {
     data() {
@@ -26,9 +28,9 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
+      ...mapState({
+        token: state => state.authentication.token
+      }),
       photoPage() {
         return this.$route.name === 'photo'
       },
@@ -41,11 +43,7 @@
       editPostPage() {
         return this.$route.name === 'editPost'
       },
-      breakpoint() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
-        return windowWidth < breakpointValue
-      }
+      breakpoint
     },
     methods: {
       getPosts() {
@@ -63,17 +61,6 @@
     },
     created() {
       this.getPosts()
-    },
-    beforeMount() {
-      // axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, news_feed: 1}})
-      //   .then(response => {
-      //     // console.log(response)
-      //     for(let i = 0; i < response.data.data.length; i++) {
-      //       this.posts.push(response.data.data[i])
-      //     }
-      //     this.$store.dispatch('getAllPosts', this.posts)
-      //   })
-      //   .catch(error => console.log(error))
     },
     components: {
       appPost: Post,

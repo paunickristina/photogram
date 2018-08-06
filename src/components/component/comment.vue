@@ -33,6 +33,8 @@
 
 <script>
   import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { storage } from '../../functions.js'
   
   export default {
     props: ['comments', 'comment_body', 'reply_username'],
@@ -44,15 +46,13 @@
       }
     },
     computed: {
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
-      storage() {
-        return 'http://54.37.227.57/storage/'
-      },
+      ...mapState({
+        token: state => state.authentication.token
+      }),
       editPostPage() {
         return this.$route.name === 'editPost'
-      }
+      },
+      storage
     },
     methods: {
       deleteComment(index) {

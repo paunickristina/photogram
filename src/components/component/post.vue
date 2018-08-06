@@ -72,6 +72,8 @@
 
 <script>
   import axios from 'axios'
+  import { mapState } from 'vuex'
+  import { breakpoint, storage } from '../../functions.js'
 
   export default {
     props: ['posts'],
@@ -82,20 +84,14 @@
       }
     },
     computed: {
+      ...mapState({
+        token: state => state.authentication.token
+      }),
       userPage() {
         return this.$route.name === 'user'
       },
-      breakpoint() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
-        return windowWidth < breakpointValue
-      },
-      token() {
-        return this.$store.getters.isAuthenticated
-      },
-      storage() {
-        return 'http://54.37.227.57/storage/'
-      }
+      breakpoint,
+      storage
     },
     methods: {
       postComment(index) {
