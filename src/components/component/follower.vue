@@ -30,7 +30,7 @@
         token: state => state.authentication.token
       }),
       likesPage() {
-        return this.$route.name === 'likes'
+        return this.$route.name === 'likes' || this.$route.name === 'userLikes'
       },
       storage
     },

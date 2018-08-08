@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view :key="$route.path"></router-view>
+    <transition name="fade" mode="out-in">
+      <router-view :key="$route.path"></router-view>
+    </transition>
   </div>
 </template>
 
@@ -14,5 +16,16 @@
 
 <style lang="scss">
  @import "./assets/scss/main.scss";
- 
+  .fade-enter {
+    opacity: 0;
+  }
+
+  .fade-enter-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .fade-leave-active {
+    transition: opacity 0s ease;
+    opacity: 0;
+  }
 </style>

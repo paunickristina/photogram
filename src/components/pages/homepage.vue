@@ -4,7 +4,9 @@
     <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
       <app-post :posts='posts'></app-post>
     </section>
-    <router-view></router-view>
+    <transition name="fade" mode="out-in">
+      <router-view></router-view>
+    </transition>
     <app-footer></app-footer>
   </section>
 </template>
@@ -72,6 +74,20 @@
 
 <style lang="scss" scoped>
   @import "../../assets/scss/settings/_module-settings.scss";
+
+  .fade-enter {
+    opacity: 0;
+  }
+
+  .fade-enter-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .fade-leave-active {
+    transition: opacity 0.1s ease;
+    opacity: 0;
+  }
+  
   .p-homepage {
 
     & .news-feed {

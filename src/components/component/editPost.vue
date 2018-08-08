@@ -15,6 +15,8 @@
 	import Header from './header.vue'
 	import Comment from './comment.vue'
 	import axios from 'axios'
+	import { mapState } from 'vuex'
+	import { breakpoint, storage } from '../../functions.js'
 
 	export default {
 		props: ['post_id'],
@@ -27,17 +29,11 @@
 			}
 		},
 		computed: {
-			token() {
-        return this.$store.getters.isAuthenticated
-      },
-			breakpoint() {
-				const windowWidth = $(window).width()
-				const breakpointValue = 768
-				return windowWidth < breakpointValue
-			},
-			storage() {
-        return 'http://54.37.227.57/storage/'
-			},
+			...mapState({
+        token: state => state.authentication.token
+			}),
+			breakpoint,
+			storage
 			//check this
 			// post() {
 			// 	return this.$store.getters.post
@@ -57,7 +53,13 @@
           console.log(this.comments)
         })
         .catch(error => console.log(error))
-    },
+		},
+		created() {
+			$('body').css({'overflow':'hidden'})
+		},
+		destroyed() {
+			$('body').css({'overflow':'visible'})
+		},
 		components: {
 			appHeader: Header,
 			appComment: Comment

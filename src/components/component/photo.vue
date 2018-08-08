@@ -50,7 +50,7 @@
               <path id="Union_7" data-name="Union 7" class="cls-1" d="M4.028,13.662a9.6,9.6,0,1,1,3.278,3.861L0,20.306Z" transform="translate(6287 -476)"/>
             </svg>
           </div>
-          <router-link tag="div" :to="{ name: 'likes', params: {post_id: post_id} }" class="c-photo__likes-right">
+          <router-link  :to="{ name: likesRoute, params: {post_id: post_id} }" class="c-photo__likes-right">
             <img src="../../assets/images/heart.png" alt="">
             <p>{{ post.likes_count}} likes</p>
           </router-link>
@@ -69,11 +69,11 @@
             <p>{{ comment.body }}</p>
           </div>
           <div class="c-photo__comments-comments">
-            <router-link tag="p" :to="{ name: 'comments', params: {post_id: post.id} }" v-if="post.comments.length > 0">view all comments</router-link>
+            <router-link tag="p" :to="{ name: commentsRoute, params: {post_id: post.id} }" v-if="post.comments.length > 0">view all comments</router-link>
           </div>
         </div>
-        <div class="c-photo__arrow-left"></div>
-        <div class="c-photo__arrow-right"></div>
+        <div class="c-photo__arrow c-photo__arrow--left"></div>
+        <div class="c-photo__arrow c-photo__arrow--right"></div>
       </div>
     </article> 
   </div>
@@ -103,6 +103,25 @@
       }),
       buttonShow() {
         return this.userId == this.post.user_id
+      },
+      userPage() {
+        return this.$route.name === 'user' || this.$route.name === 'userPhoto' || this.$route.name === 'userComments' || this.$route.name === 'userLikes' || this.$route.name === 'userEditPost'
+      },
+      likesRoute() {
+        if(this.userPage === true) {
+          return 'userLikes'
+        }
+        else {
+          return 'likes'
+        }
+      },
+      commentsRoute() {
+        if(this.userPage === true) {
+          return 'userComments'
+        }
+        else {
+          return 'comments'
+        }
       },
       breakpoint,
       storage
@@ -171,6 +190,10 @@
     },
     created() {
       this.getPost()
+      $('body').css({'overflow':'hidden'})
+    },
+    destroyed() {
+      $('body').css({'overflow':'visible'})
     },
     components: {
       appHeader: Header
@@ -190,6 +213,7 @@
       right: 0;
       bottom: 0;
       background: rgba(35, 36, 41, 0.95);
+      z-index: 1;
     }
 
     &__wrapper {
@@ -448,14 +472,13 @@
       }
     }
 
-    &__arrow-left {
+    &__arrow {
       display: none;
 
       @include breakpoint(desktop) {
+        cursor: pointer;
         display: block;
         position: absolute;
-        left: -4rem;
-        top: 44%;
       }
 
       &::before {
@@ -464,53 +487,50 @@
         width: 0.5rem;
         height: 2.4rem;
         background: #fff;
-        transform: rotate(45deg);
         position: absolute;
-        left: 0.3rem;
       }
+
       &::after {
         content: "";
         display: block;
         width: 0.5rem;
         height: 2.4rem;
         background: #fff;
-        transform: rotate(-45deg);
         position: absolute;
-        left: 0.3rem;
-        top: 1.4rem;
-      }
-    }
-
-    &__arrow-right {
-      display: none;
-
-      @include breakpoint(desktop) {
-        display: block;
-        position: absolute;
-        right: -4rem;
-        top: 44%;
       }
 
-      &::before {
-        content: "";
-        display: block;
-        width: 0.5rem;
-        height: 2.4rem;
-        background: #fff;
-        transform: rotate(-45deg);
-        position: absolute;
-        left: 0.3rem;
+      &--left {
+        @include breakpoint(desktop) {
+          left: -4rem;
+          top: 44%;
+        }
+
+        &::before {
+          transform: rotate(45deg);
+          left: 0.3rem;
+        }
+        &::after {
+          transform: rotate(-45deg);
+          left: 0.3rem;
+          top: 1.4rem;
+        }
       }
-      &::after {
-        content: "";
-        display: block;
-        width: 0.5rem;
-        height: 2.4rem;
-        background: #fff;
-        transform: rotate(45deg);
-        position: absolute;
-        left: 0.3rem;
-        top: 1.4rem;
+
+      &--right {
+        @include breakpoint(desktop) {
+          right: -4rem;
+          top: 44%;
+        }
+
+        &::before {
+          transform: rotate(-45deg);
+          left: 0.3rem;
+        }
+        &::after {
+          transform: rotate(45deg);
+          left: 0.3rem;
+          top: 1.4rem;
+        }
       }
     }
 

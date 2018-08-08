@@ -46,6 +46,9 @@
           </div>
         </div>
         <app-post :posts='posts'></app-post>
+        <transition name="fade" mode="out-in">
+          <router-view></router-view>
+        </transition>
       </div>
       <app-footer></app-footer>
     </div> <!-- end .main-wrapper -->
@@ -80,9 +83,6 @@
       buttonShow() {
         return this.userId == this.user_id
       },
-      // storage() {
-      //   return 'http://54.37.227.57/storage/'
-      // },
       storage
     },
     components: {
@@ -117,57 +117,31 @@
         this.$store.dispatch('logOut')
       },
       single() {
-        const $windowWidth = $(window).width()
-        const $breakpointValue = 768
-        let $post = $('.c-post')
-        if($windowWidth < $breakpointValue) {
-          $post.removeClass('multiMobile')
+        const windowWidth = $(window).width()
+        const breakpointValue = 768
+        const post = $('.c-post')
+        if(windowWidth < breakpointValue) {
+          post.removeClass('multiMobile')
         }
         else {
-          $post.addClass('single')
+          post.addClass('single')
         }
       },
       multi() {
-        const $windowWidth = $(window).width()
-        const $breakpointValue = 768
-        var $post = $('.c-post')
-        if($windowWidth < $breakpointValue) {
-          $post.addClass('multiMobile')
+        const windowWidth = $(window).width()
+        const breakpointValue = 768
+        const post = $('.c-post')
+        if(windowWidth < breakpointValue) {
+          post.addClass('multiMobile')
         }
         else {
-          $post.removeClass('single')
+          post.removeClass('single')
         }
       }
     },
     created() {
       this.getUser()
       this.getUsersPosts()
-    },
-    beforeMount() {
-      // axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
-      //   .then(response => {
-      //     console.log(response)
-      //     // const data = response.data.data
-      //     this.user = response.data.data
-      //     this.title = response.data.data.username
-      //     //check this
-      //     // this.image = 'http://54.37.227.57/storage/' + response.data.data.image.profile
-      //     console.log(this.user)
-      //     console.log(this.user.image)
-      //   })
-      //   .catch(error => console.log(error))
-
-      // axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
-      //   .then(response => {
-      //     console.log(response)
-      //     for(let i = 0; i < response.data.data.length; i++) {
-      //       this.posts.push(response.data.data[i])
-      //     }
-      //     // console.log(this.posts)
-      //     //check this
-      //     this.$store.dispatch('getAllPosts', this.posts)
-      //   })
-      //   .catch(error => console.log(error))
     }
 	}
     
@@ -175,6 +149,19 @@
 
 <style lang="scss" scoped>
   @import "../../assets/scss/settings/_module-settings.scss";
+
+  .fade-enter {
+    opacity: 0;
+  }
+
+  .fade-enter-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .fade-leave-active {
+    transition: opacity 0.1s ease;
+    opacity: 0;
+  }
   
   .p-user {
     padding-bottom: 10rem;

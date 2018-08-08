@@ -7,7 +7,7 @@
         </div>
         <p>{{ post.username }}</p>
       </router-link>
-      <router-link tag="div" :to="{ name: 'photo', params: {post_id: post.id} }" class="c-post__media">
+      <router-link tag="div" :to="{ name: photoRoute, params: {post_id: post.id} }" class="c-post__media">
         <div class="c-post__media-video" v-if="post.type_id === 2">
           <video controls>
             <source :src="storage + post.media" type="video/mp4">
@@ -44,7 +44,7 @@
             <path id="Union_7" data-name="Union 7" class="cls-1" d="M4.028,13.662a9.6,9.6,0,1,1,3.278,3.861L0,20.306Z" transform="translate(6287 -476)"/>
           </svg>
         </div>
-        <router-link tag="div" :to="{ name: 'likes', params: {post_id: post.id} }" class="c-post__likes-right">
+        <router-link tag="div" :to="{ name: likesRoute, params: {post_id: post.id} }" class="c-post__likes-right">
           <img src="../../assets/images/heart.png" alt="">
           <p>{{ post.likes_count }} likes</p>
         </router-link>
@@ -63,7 +63,7 @@
           <p>{{ comment.body }}</p>
         </div>
         <div class="c-post__comments-comments">
-          <router-link tag="p" :to="{ name: 'comments', params: {post_id: post.id} }" v-if="post.comments.length > 0">view all comments</router-link>
+          <router-link tag="p" :to="{ name: commentsRoute, params: {post_id: post.id} }" v-if="post.comments.length > 0">view all comments</router-link>
         </div>
       </div>
     </div>
@@ -88,10 +88,37 @@
         token: state => state.authentication.token
       }),
       userPage() {
-        return this.$route.name === 'user'
+        return this.$route.name === 'user' || this.$route.name === 'userPhoto' || this.$route.name === 'userLikes' || this.$route.name === 'userComments' || this.$route.name === 'userEditPost'
+      },
+      photoRoute() {
+        if(this.userPage === true) {
+          return 'userPhoto'
+        }
+        else {
+          return 'photo'
+        }
+      },
+      likesRoute() {
+        if(this.userPage === true) {
+          return 'userLikes'
+        }
+        else {
+          return 'likes'
+        }
+      },
+      commentsRoute() {
+        if(this.userPage === true) {
+          return 'userComments'
+        }
+        else {
+          return 'comments'
+        }
       },
       breakpoint,
       storage
+    },
+    mounted() {
+      console.log(this.userPage)
     },
     methods: {
       postComment(index) {

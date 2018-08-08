@@ -54,6 +54,10 @@
     },
     created() {
       this.getLikes()
+      $('body').css({'overflow':'hidden'})
+    },
+    destroyed() {
+      $('body').css({'overflow':'visible'})
     },
     components: {
       appHeader: Header,
@@ -75,6 +79,7 @@
         right: 0;
         bottom: 0;
         background: rgba(35, 36, 41, 0.95);
+        z-index: 1;
       }
 
       &-wrapper {

@@ -210,15 +210,15 @@
           @include fontSizeRem(10, 16);
 
           & input {
-            -webkit-appearance: none; 
-            -moz-appearance: none;
+            // -webkit-appearance: none; 
+            // -moz-appearance: none;
             height: 1.1rem;
             width: 1.1rem;
             outline: 0;
             border-radius: 0;
             background: none;
             border: 1px solid $gray;
-            vertical-align: middle;
+            margin-top: -0.2rem;
 
             @include breakpoint(desktop) {
               width: 1.4rem;

@@ -128,6 +128,12 @@ const routes = [
 				next('/login')
 			}
 		},
+		children: [
+			{path: '/user/:user_id/user-photo/:post_id', component: Photo, name: 'userPhoto', props: true},
+			{path: '/user/:user_id/user-comments/:post_id', component: Comments, name: 'userComments', props: true},
+			{path: '/user/:user_id/user-likes/:post_id', component: Likes, name: 'userLikes', props: true},
+			{path: '/user/:user_id/user-edit-post/:post_id', component: EditPost, name: 'userEditPost', props: true}
+		]
 	},
 	{path: '/edit-profile', component: EditProfile, name: 'editProfile',
 		beforeEnter(to, from, next) {
