@@ -21,6 +21,7 @@
   import Follower from './follower.vue'
   import axios from 'axios'
   import { mapState } from 'vuex'
+  import { breakpoint } from '../../functions.js'
 
   export default {
     props: ['post_id'],
@@ -36,7 +37,8 @@
     computed: {
       ...mapState({
         token: state => state.authentication.token
-      })
+      }),
+      breakpoint
     },
     methods: {
       getLikes() {
@@ -54,10 +56,14 @@
     },
     created() {
       this.getLikes()
-      $('body').css({'overflow':'hidden'})
+      if(this.breakpoint === false) {
+        $('body').css({'overflow':'hidden'})
+      }
     },
     destroyed() {
-      $('body').css({'overflow':'visible'})
+      if(this.breakpoint === false) {
+        $('body').css({'overflow':'visible'})
+      }
     },
     components: {
       appHeader: Header,

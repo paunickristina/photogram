@@ -9,11 +9,11 @@
 				</g>
 			</svg>
 		</router-link>
-		<div class="c-footer__upload">
+		<router-link tag="div" :to="{ name: 'upload'}" class="c-footer__upload">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="2837.992 1487.592 14.439 14.439">
 				<path id="Union_49" data-name="Union 49" class="cls-1" d="M6.353,13.573V8.086H.867a.866.866,0,1,1,0-1.732H6.353V.867a.866.866,0,1,1,1.732,0V6.353h5.487a.866.866,0,0,1,0,1.732H8.086v5.487a.866.866,0,0,1-1.732,0Z" transform="translate(2837.992 1487.592)"/>
 			</svg>
-		</div>
+		</router-link>
 		<router-link class="c-footer__profile" :to="{ name: 'user', params: {user_id: userId}}">
 			<!-- uncomment this -->
 			<!-- <img :src="userImage" alt=""> -->

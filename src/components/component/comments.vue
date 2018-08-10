@@ -80,10 +80,14 @@
     },
     created() {
       this.getComments()
-      $('body').css({'overflow':'hidden'})
+      if(this.breakpoint === false) {
+        $('body').css({'overflow':'hidden'})
+      }
     },
     destroyed() {
-      $('body').css({'overflow':'visible'})
+      if(this.breakpoint === false) {
+        $('body').css({'overflow':'visible'})
+      }
     },
     components: {
       appHeader: Header,

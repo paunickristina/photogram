@@ -52,7 +52,8 @@
       <div class="c-post__comments">
         <div class="c-post__comments-comment u-clearfix" v-if="post.description">
           <router-link :to="{ name: 'user', params: {user_id: post.user_id}}">
-              <img :src="storage + post.user_image.profile" alt="">
+            <!-- uncomment this -->
+              <!-- <img :src="storage + post.user_image.profile" alt=""> -->
           </router-link>
           <p>{{ post.description }}</p>
         </div>
@@ -116,9 +117,6 @@
       },
       breakpoint,
       storage
-    },
-    mounted() {
-      console.log(this.userPage)
     },
     methods: {
       postComment(index) {

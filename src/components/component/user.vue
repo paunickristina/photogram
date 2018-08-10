@@ -1,8 +1,8 @@
 <template>
 	<section class="p-user" v-if="loading">
     <div class="main-wrapper">
-      <app-header :title="user.username"></app-header>
-      <div class="p-user__about">
+      <app-header :title="user.username" v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint)"></app-header>
+      <div class="p-user__about" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
         <div class="p-user__about-img">
           <p>{{ user.username }}</p>
           <!-- uncomment this -->
@@ -32,7 +32,7 @@
           <button class="c-btn c-btn--small c-btn--gray">Following</button>
         </div>
       </div>
-      <div class="p-user__posts">
+      <div class="p-user__posts" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
         <div class="p-user__posts-header u-clearfix">
           <div class="p-user__posts-header-single" @click="single"></div>
           <div class="p-user__posts-header-multi" @click="multi">
@@ -46,10 +46,10 @@
           </div>
         </div>
         <app-post :posts='posts'></app-post>
-        <transition name="fade" mode="out-in">
-          <router-view></router-view>
-        </transition>
       </div>
+      <transition name="fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
       <app-footer></app-footer>
     </div> <!-- end .main-wrapper -->
 	</section> <!-- end .p-user -->
@@ -61,7 +61,7 @@
   import Post from './post.vue'
   import axios from 'axios'
   import { mapState } from 'vuex'
-  import { storage } from '../../functions.js'
+  import { storage, breakpoint } from '../../functions.js'
   
 	export default {
 		props: ['user_id'],
@@ -83,7 +83,23 @@
       buttonShow() {
         return this.userId == this.user_id
       },
-      storage
+      photoPage() {
+        return this.$route.name === 'userPhoto'
+      },
+      commentsPage() {
+        return this.$route.name === 'userComments'
+      },
+      likesPage() {
+        return this.$route.name === 'userLikes'
+      },
+      editPostPage() {
+        return this.$route.name === 'userEditPost'
+      },
+      // uploadPage() {
+      //   return this.$route.name === 'userUpload'
+      // },
+      storage,
+      breakpoint
     },
     components: {
       appHeader: Header,

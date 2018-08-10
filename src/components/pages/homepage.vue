@@ -1,7 +1,7 @@
 <template>
   <section class="p-homepage" v-if="loading">
-    <app-header :title='title' v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint)"></app-header>
-    <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
+    <app-header :title='title' v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint) && (!uploadPage || !breakpoint)"></app-header>
+    <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage && !uploadPage) || !breakpoint">
       <app-post :posts='posts'></app-post>
     </section>
     <transition name="fade" mode="out-in">
@@ -44,6 +44,9 @@
       },
       editPostPage() {
         return this.$route.name === 'editPost'
+      },
+      uploadPage() {
+        return this.$route.name === 'upload'
       },
       breakpoint
     },

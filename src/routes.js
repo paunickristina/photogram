@@ -73,7 +73,11 @@ const Notification = resolve => {
 		resolve(require('./components/component/notification.vue'))
 	})
 }
-
+const Upload = resolve => {
+	require.ensure(['./components/component/upload.vue'], () => {
+		resolve(require('./components/component/upload.vue'))
+	})
+}
 
 Vue.use(VueRouter)
 
@@ -116,7 +120,8 @@ const routes = [
 			{path: '/photo/:post_id', component: Photo, name: 'photo', props: true},
 			{path: '/comments/:post_id', component: Comments, name: 'comments', props: true},
 			{path: '/likes/:post_id', component: Likes, name: 'likes', props: true},
-			{path: '/edit-post/:post_id', component: EditPost, name: 'editPost', props: true}
+			{path: '/edit-post/:post_id', component: EditPost, name: 'editPost', props: true},
+			{path: '/upload', component: Upload, name: 'upload'}
 		]
 	},
 	{path: '/user/:user_id', component: User, name: 'user', props: true,
@@ -132,7 +137,8 @@ const routes = [
 			{path: '/user/:user_id/user-photo/:post_id', component: Photo, name: 'userPhoto', props: true},
 			{path: '/user/:user_id/user-comments/:post_id', component: Comments, name: 'userComments', props: true},
 			{path: '/user/:user_id/user-likes/:post_id', component: Likes, name: 'userLikes', props: true},
-			{path: '/user/:user_id/user-edit-post/:post_id', component: EditPost, name: 'userEditPost', props: true}
+			{path: '/user/:user_id/user-edit-post/:post_id', component: EditPost, name: 'userEditPost', props: true},
+			// {path: '/user/:user_id/user-upload', component: Upload, name: 'userUpload'}
 		]
 	},
 	{path: '/edit-profile', component: EditProfile, name: 'editProfile',

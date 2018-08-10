@@ -28,11 +28,11 @@
               <!-- uncomment this -->
               <!-- <img :src="userImage" alt=""> -->
             </router-link>
-            <div class="c-header__left-upload">
+            <router-link tag="div" :to="{ name: 'upload'}" class="c-header__left-upload">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="2837.992 1487.592 14.439 14.439">
                 <path id="Union_49" data-name="Union 49" class="cls-1" d="M6.353,13.573V8.086H.867a.866.866,0,1,1,0-1.732H6.353V.867a.866.866,0,1,1,1.732,0V6.353h5.487a.866.866,0,0,1,0,1.732H8.086v5.487a.866.866,0,0,1-1.732,0Z" transform="translate(2837.992 1487.592)"/>
               </svg>
-            </div>
+            </router-link>
             <router-link tag="div" :to="{ name: 'notification'}" class="c-header__left-notif">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="6304.658 -988.421 18.607 17.74">
                 <path id="Path_22" data-name="Path 22" class="cls-1" d="M33.212,19.862a3.731,3.731,0,0,0-4.948-.122h0A4.972,4.972,0,0,1,25.27,20.9a4.733,4.733,0,0,1-3.3-1.161h0a3.789,3.789,0,0,0-4.887.061,3.737,3.737,0,0,0-.428,5.192h0L25.087,36.6l8.491-11.668A3.7,3.7,0,0,0,33.212,19.862Z" transform="translate(6288.853 -1007.282)"/>
@@ -184,7 +184,7 @@
         content: "";
         display: block;
         width: 0.2rem;
-        height: 1.4rem;
+        height: 1.5rem;
         background: $gray;
         transform: rotate(45deg);
         position: absolute;
@@ -257,8 +257,8 @@
         & svg {
           width: 2rem;
           height: 2rem;
-          margin-top: 0.65rem;
-          margin-left: 0.65rem;
+          margin-top: 0.7rem;
+          margin-left: 0.7rem;
 
           .cls-1 {
             fill: $gray;
