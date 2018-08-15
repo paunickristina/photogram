@@ -86,7 +86,7 @@
   import { breakpoint, storage } from '../../functions.js'
   
   export default {
-    props: ['post_id'],
+    props: ['post_id', 'index'],
     data() {
       return {
         loading: false,
@@ -126,6 +126,9 @@
       breakpoint,
       storage
     },
+    // mounted() {
+    //   console.log(this.index)
+    // },
     methods: {
       getPost() {
         // this.post = {}

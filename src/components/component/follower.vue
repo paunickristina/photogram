@@ -27,7 +27,8 @@
     props: ['followers'],
     computed: {
       ...mapState({
-        token: state => state.authentication.token
+        token: state => state.authentication.token,
+        userId: state => state.authentication.userId
       }),
       likesPage() {
         return this.$route.name === 'likes' || this.$route.name === 'userLikes'
@@ -39,7 +40,7 @@
         return this.followers[index].auth_follow
       },
       authUser(index) {
-        return this.followers[index].id == this.$store.getters.authenticatedUser
+        return this.followers[index].id == this.userId
       },
       followerId(index) {
         return this.followers[index].id
@@ -51,7 +52,7 @@
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
         })
         .catch(error => console.log(error))
       },
@@ -59,7 +60,7 @@
         const user_id = this.followers[index].id
         axios.delete('/followers/' + user_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
         .then(response => {
-          console.log(response)
+          // console.log(response)
         })
         .catch(error => console.log(error))
       },

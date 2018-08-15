@@ -5,8 +5,7 @@
       <div class="p-user__about" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
         <div class="p-user__about-img">
           <p>{{ user.username }}</p>
-          <!-- uncomment this -->
-          <!-- <img :src="storage + user.image.profile" alt=""> -->
+          <img :src="storage + user.image.profile" alt="">
         </div>
         <div class="p-user__about-count">
           <p>{{ user.posts_count }}</p>
@@ -110,7 +109,7 @@
       getUser() {
         axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
         .then(response => {
-          console.log(response)
+          // console.log(response)
           this.user = response.data.data
           this.title = response.data.data.username
           this.loading = true
@@ -120,7 +119,7 @@
       getUsersPosts() {
         axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
         .then(response => {
-          console.log(response)
+          // console.log(response)
           for(let i = 0; i < response.data.data.length; i++) {
             this.posts.push(response.data.data[i])
           }
@@ -133,10 +132,8 @@
         this.$store.dispatch('logOut')
       },
       single() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
         const post = $('.c-post')
-        if(windowWidth < breakpointValue) {
+        if(this.breakpoint === true) {
           post.removeClass('multiMobile')
         }
         else {
@@ -144,10 +141,8 @@
         }
       },
       multi() {
-        const windowWidth = $(window).width()
-        const breakpointValue = 768
         const post = $('.c-post')
-        if(windowWidth < breakpointValue) {
+        if(this.breakpoint === true) {
           post.addClass('multiMobile')
         }
         else {

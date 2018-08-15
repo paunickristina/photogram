@@ -25,8 +25,7 @@
               </svg>
             </router-link>
             <router-link tag="div" class="c-header__left-profile" :to="{ name: 'user', params: {user_id: userId}}">
-              <!-- uncomment this -->
-              <!-- <img :src="userImage" alt=""> -->
+              <img :src="userImage" alt="">
             </router-link>
             <router-link tag="div" :to="{ name: 'upload'}" class="c-header__left-upload">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="2837.992 1487.592 14.439 14.439">

@@ -23,7 +23,7 @@
               <svg @click="deleteLike(index)" v-else xmlns="http://www.w3.org/2000/svg" viewBox="4631 1443.165 20.669 20.141">
                 <path id="Path_111" data-name="Path 111" class="cls-2" d="M19.339,1.1A4.1,4.1,0,0,0,13.823.959h0a5.493,5.493,0,0,1-3.337,1.318A5.225,5.225,0,0,1,6.809.959h0a4.166,4.166,0,0,0-5.448.069,4.366,4.366,0,0,0-.409,5.9h0L10.35,20.1,19.816,6.854A4.416,4.416,0,0,0,19.339,1.1Z" transform="translate(4631.004 1443.205)"/>
               </svg>
-              <p @click="deleteComment(index)" v-if="userComment(index) || editPostPage">delete</p>
+              <p @click="deleteComment(index)" v-if="userComment(index) || editPostPage || userCommentsPage">delete</p>
             </div>
           </div>
         </div> <!-- end .c-comment__overflow-auto -->
@@ -37,20 +37,24 @@
   import { storage } from '../../functions.js'
   
   export default {
-    props: ['comments', 'comment_body', 'reply_username'],
-    // props: ['comments', 'comment_body'],
+    props: ['comments', 'comment_body', 'reply_username', 'id_comment', 'post_id'],
     data() {
       return {
-        // user_id: this.userCommentId
-        reply_user: this.reply_username
+        reply_user: this.reply_username,
+        comment_id: this.id_comment
       }
     },
     computed: {
       ...mapState({
-        token: state => state.authentication.token
+        token: state => state.authentication.token,
+        userId: state => state.authentication.userId
       }),
       editPostPage() {
         return this.$route.name === 'editPost'
+      },
+      userCommentsPage() {
+        //check this
+        return this.$route.path === '/user/' + this.userId + '/user-comments/' + this.post_id
       },
       storage
     },
@@ -59,30 +63,20 @@
         const comment_id = this.comments[index].id
         axios.delete('/comments/' + comment_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
         .then(response => {
-          console.log(response)
+          // console.log(response)
           // this.$store.dispatch('getAllComments', this.comments)
         })
         .catch(error => console.log(error))
       },
       editComment(index) {
-        const comment_id = this.comments[index].id
+        this.comment_id = this.comments[index].id
         const $input = $('.p-comments__comment-form').find('input');
-        const $value = this.comments[index].body + ' '
+        const $value = this.comments[index].body
         $input.val($value).focus()
-        console.log(this.comment_body)
-
-        // axios.patch('/comments/' + comment_id, 
-        //   {body: this.comment_body},
-        //   {headers:{ 'Authorization': 'Bearer '+ this.token}}
-        // )
-        // .then(response => {
-        //   console.log(response)
-        //   // this.$store.dispatch('getAllComments', this.comments)
-        // })
-        // .catch(error => console.log(error))
+        this.$emit('event', this.comment_id)
       },
       userComment(index) {
-        return this.$store.getters.authenticatedUser == this.comments[index].user_id
+        return this.userId == this.comments[index].user_id
       },
       userCommentId(index) {
         return this.comments[index].user_id
@@ -91,8 +85,6 @@
         const $input = $('.p-comments__comment-form').find('input')
         const $value = '@' + this.comments[index].username + ' '
         $input.val($value).focus()
-        // this.reply_username = this.comments[index].username
-        // this.$emit('event', this.reply_username)
         this.reply_user = this.comments[index].username
         this.$emit('event', this.reply_user)
       },
@@ -103,7 +95,7 @@
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
           // this.$store.dispatch('getAllComments', this.comments)
         })
         .catch(error => console.log(error))
@@ -113,7 +105,7 @@
         axios.delete('/likes/' + like_id, {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
           // this.$store.dispatch('getAllComments', this.comments)
         })
         .catch(error => console.log(error))

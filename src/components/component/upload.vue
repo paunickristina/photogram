@@ -74,8 +74,8 @@
 					// }
 				}
 				
-				formData.append('image', '')
-				formData.append('video', this.file)
+				formData.append('image', this.file)
+				formData.append('video', '')
 				formData.append('thumbnail', '')
 				formData.append('description', this.description)
 				// for (var key of formData.entries()) {
@@ -89,6 +89,9 @@
         )
         .then(response => {
           console.log(response)
+					if (response.status === 201) {
+						this.$router.go(-1)
+					}
         })
         .catch(error => console.log(error))
 			}

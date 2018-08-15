@@ -7,7 +7,7 @@
         </div>
         <p>{{ post.username }}</p>
       </router-link>
-      <router-link tag="div" :to="{ name: photoRoute, params: {post_id: post.id} }" class="c-post__media">
+      <router-link tag="div" :to="{ name: photoRoute, params: {post_id: post.id, index: index} }" class="c-post__media">
         <div class="c-post__media-video" v-if="post.type_id === 2">
           <video controls>
             <source :src="storage + post.media" type="video/mp4">
@@ -15,9 +15,25 @@
             <source :src="storage + post.media" type="video/ogg">
           </video>
         </div>
-          <div class="c-post__media-img" v-else>
-            <img :src="storage + post.media.large" alt="">
+        <div class="c-post__media-img" v-else>
+          <img :src="storage + post.media.large" alt="">
+        </div>
+        <div @click="showRemoveWarning" v-if="authUserPage" class="c-post__remove">
+          <svg viewBox="0 0 512 512">
+            <path d="M320.887,56.21V0H191.114v56.21H45.495v95.344H77.64V512h356.72V151.554h32.145V56.21H320.887z M221.114,30h69.773v26.21
+              h-69.773V30z M404.36,482H107.64V151.554h296.72V482z M436.505,121.554H75.495V86.21h361.01V121.554z"/>
+            <rect x="169.09" y="220.19" width="30" height="193.17"/>
+            <rect x="241" y="220.19" width="30" height="193.17"/>
+            <rect x="312.91" y="220.19" width="30" height="193.17"/>
+          </svg>
+        </div>
+        <div class="c-post__warning">
+          <div class="c-post__warning-content">
+            <p>You want to delete this post?</p>
+            <button @click="hideRemoveWarning" class="c-btn c-btn--small">Cancel</button>
+            <button @click="deletePost(index, $event);" class="c-btn c-btn--small">Delete</button>
           </div>
+        </div>
       </router-link>
       <div class="c-post__form" :class="{ userPage: userPage }">
         <form @submit.prevent="postComment(index)">
@@ -52,8 +68,7 @@
       <div class="c-post__comments">
         <div class="c-post__comments-comment u-clearfix" v-if="post.description">
           <router-link :to="{ name: 'user', params: {user_id: post.user_id}}">
-            <!-- uncomment this -->
-              <!-- <img :src="storage + post.user_image.profile" alt=""> -->
+              <img :src="storage + post.user_image.profile" alt="">
           </router-link>
           <p>{{ post.description }}</p>
         </div>
@@ -86,10 +101,14 @@
     },
     computed: {
       ...mapState({
-        token: state => state.authentication.token
+        token: state => state.authentication.token,
+        userId: state => state.authentication.userId
       }),
       userPage() {
         return this.$route.name === 'user' || this.$route.name === 'userPhoto' || this.$route.name === 'userLikes' || this.$route.name === 'userComments' || this.$route.name === 'userEditPost'
+      },
+      authUserPage() {
+        return this.$route.path === '/user/' + this.userId
       },
       photoRoute() {
         if(this.userPage === true) {
@@ -141,6 +160,28 @@
           $comment.parents('.c-post__wrapper').siblings().find('.c-post__form').removeClass('active')
         };
         $inputField.focus();
+      },
+      showRemoveWarning(e) {
+        e.stopPropagation()
+        const $remove = $(e.target)
+        const $warning = $remove.parents('.c-post__media').find('.c-post__warning')
+        $warning.addClass('active')
+      },
+      hideRemoveWarning(e) {
+        e.stopPropagation()
+        const $removeWarning = $(e.target)
+        const $warning = $removeWarning.parents('.c-post__warning')
+        $warning.removeClass('active')
+      },
+      deletePost(index, event) {
+        event.stopPropagation()
+        const post_id = this.posts[index].id
+        axios.delete('/posts/' + post_id, {headers: {'Authorization': 'Bearer '+ this.token}}
+        )
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => console.log(error))
       },
       postLike(index) {
         const post_id = this.posts[index].id
@@ -284,10 +325,91 @@
       }
     }
 
+    &__remove {
+      position: absolute;
+      top: 1rem;
+      right: 0.6rem;
+      width: 2.6rem;
+      padding: 0.3rem 0.2rem;
+      background: $gray;
+
+      @include breakpoint(desktop) {
+        width: 3rem;
+        padding: 0.3rem 0.2rem;
+        cursor: pointer;
+        -webkit-transition: 0.3s all ease-in;
+        -moz-transition: 0.3s all ease-in;
+        -o-transition: 0.3s all ease-in;
+        transition: 0.3s all ease-in;
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      & svg {
+        fill: $white;
+      }
+    }
+
+    &__warning {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      @include fontSizeRem(20, 24);
+      color: $white;
+      background: $gray;
+      -webkit-transition: 0.15s all ease-in;
+      -moz-transition: 0.15s all ease-in;
+      -o-transition: 0.15s all ease-in;
+      transition: 0.15s all ease-in;
+      height: 0;
+      width: 0;
+      overflow: hidden;
+
+      &.active {
+        height: 32rem;
+        width: 100%;
+        
+
+        & .c-post__warning-content {
+          -webkit-transition: 0.3s all ease-in;
+          -moz-transition: 0.3s all ease-in;
+          -o-transition: 0.3s all ease-in;
+          transition: 0.3s all ease-in;
+          opacity: 1;
+        }
+      }
+
+      &-content {
+        width: 50%;
+        margin: 11rem auto 0;
+        text-align: center;
+        opacity: 0;
+        -webkit-transition: 0s all ease-in;
+        -moz-transition: 0s all ease-in;
+        -o-transition: 0s all ease-in;
+        transition: 0s all ease-in;
+
+        @include breakpoint(desktop) {
+          width: 73%;
+          margin: 10rem auto 0;
+        }
+
+        & p {
+          margin-bottom: 3rem;
+
+          @include breakpoint(desktop) {
+            margin-bottom: 4rem;
+          }
+        }
+      }
+    }
+
     &__media {
       width: 32rem;
       height: 32rem;
       margin-bottom: 0.9rem;
+      background: $gray; //remove
 
       @include breakpoint(desktop) {
         width: 100%;
@@ -303,11 +425,20 @@
 
       &-video {
         & video {
-          width: 32rem;
+          width: 100%;
           height: 33rem;
           position: relative;
           bottom: 3rem;
           display: block;
+        }
+      }
+
+      &:hover {
+        & .c-post__remove {
+          @include breakpoint(desktop) {
+            visibility: visible;
+            opacity: 0.8;
+          }
         }
       }
     }

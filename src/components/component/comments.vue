@@ -2,8 +2,7 @@
   <div class="p-comments" v-if="loading">
     <app-header :title="title" v-if="breakpoint"></app-header>
     <div class="p-comments__comment">
-      <app-comment :comments="comments" :comment_body="comment_body" :reply_username="reply_username" @event="reply_username = $event"></app-comment>
-      <!-- <app-comment :comments="comments" :comment_body="comment_body"></app-comment> -->
+      <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" @event="id_comment = $event; reply_username = $event;"></app-comment>
       <div class="p-comments__comment-form">
         <form @submit.prevent="postComment">
           <div class="p-comments__comment-form-field">
@@ -38,16 +37,15 @@
         reply_username: '',
         comment_body: '',
         amount: 8,
-        page: 1
+        page: 1,
+        id_comment: ''
       }
     },
     computed: {
       ...mapState({
         token: state => state.authentication.token
       }),
-      breakpoint,
-      // reply() {
-      // }
+      breakpoint
     },
     methods: {
       getComments() {
@@ -64,18 +62,32 @@
           .catch(error => console.log(error))
       },
       postComment() {
-        axios.post('/comments', 
+        if(this.id_comment == '') {
+          axios.post('/comments', 
           {post_id: this.post_id, reply_username: this.reply_username, body: this.comment_body},
-          {headers: {'Authorization': 'Bearer '+ this.token}}
-        )
-        .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
-        })
-        .catch(error => console.log(error))
+            {headers: {'Authorization': 'Bearer '+ this.token}}
+          )
+          .then(response => {
+            // console.log(response)
+            // this.$store.dispatch('getAllComments', this.comments)
+          })
+          .catch(error => console.log(error))
 
-        const $input = $('.p-comments__comment-form').find('input');
-        $input.blur().val('');
+          const $input = $('.p-comments__comment-form').find('input');
+          $input.blur().val('');
+        }
+        else {
+          axios.patch('/comments/' + this.id_comment, 
+            {body: this.comment_body},
+            {headers:{ 'Authorization': 'Bearer '+ this.token}}
+          )
+          .then(response => {
+            // console.log(response)
+            // this.$store.dispatch('getAllComments', this.comments)
+          })
+          .catch(error => console.log(error))
+        }
+        
       }
     },
     created() {
