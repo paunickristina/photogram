@@ -8,7 +8,19 @@
 				</div>
 				<h3>Upload Photo</h3>
 				<div class="p-upload__file-dropbox">
-					<input type="file" id="file" ref="file" @change="fileUpload">
+					<input type="file" accept="video/*,image/*" id="file" ref="file" @change="fileUpload">
+          <div class="p-upload__file-dropbox-preview">
+            <div v-if="showImgPreview" class="p-upload__file-dropbox-preview-img">
+              <img :src="filePreview"/>
+            </div>
+            <div v-if="showVideoPreview" class="p-upload__file-dropbox-preview-video">
+              <video controls>
+                <source :src="filePreview" type="video/mp4">
+                <source :src="filePreview" type="video/webm">
+                <source :src="filePreview" type="video/ogg">
+              </video>
+            </div>
+          </div>
 					<div class="p-upload__file-dropbox-mark">
 						<svg viewBox="0 0 395.104 395.104">
 							<g id="Layer_5_85_">
@@ -46,7 +58,10 @@
 			return {
 				title: 'Upload',
 				file: '',
-				description: ''
+        description: '',
+        showImgPreview: false,
+        showVideoPreview: false,
+        filePreview: ''
 			}
 		},
 		computed: {
@@ -57,30 +72,50 @@
 		},
 		methods: {
 			fileUpload() {
-				this.file = this.$refs.file.files[0]
-				console.log(this.file.type)
+        this.file = this.$refs.file.files[0]
+        let fileType = this.file.type
+        let imgTypes = ['image/jpeg', 'image/jpg', 'image/bmp', 'image/gif', 'image/png']
+        let videoTypes = ['video/mp4', 'video/webm', 'video/ogg']
+        let reader = new FileReader()
+
+        reader.addEventListener('load', function(){
+          if($.inArray(fileType, imgTypes) !== -1) {
+            this.showImgPreview = true
+          }
+          else if($.inArray(fileType, videoTypes) !== -1) {
+            this.showVideoPreview = true
+          }
+          this.filePreview = reader.result
+        }.bind(this), false)
+        
+        if(this.file) {
+          if($.inArray(fileType, imgTypes) !== -1) {
+            reader.readAsDataURL(this.file)
+          }
+          else if($.inArray(fileType, videoTypes) !== -1) {
+            reader.readAsDataURL(this.file)
+          }
+        }
 			},
 			submitFile() {
-				let formData = new FormData()
-				if( this.file ){
-					// if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+        let fileType = this.file.type
+        let imgTypes = ['image/jpeg', 'image/jpg', 'image/bmp', 'image/gif', 'image/png']
+        let videoTypes = ['video/mp4', 'video/webm', 'video/ogg']
+        let formData = new FormData()
 
-					// }
-					// if(this.file.type === 'image/jpeg' || this.file.type === 'image/jpg' || this.file.type === 'image/bmp' || this.file.type === 'image/gif' || this.file.type === 'image/png') {
-					// 	formData.append('image', this.file)
-					// }
-					// if(this.file.type === 'video/mp4' || this.file.type === 'video/webm' || this.file.type === 'video/ogg') {
-					// 	formData.append('video', this.file)
-					// }
+				if(this.file){
+          if($.inArray(fileType, imgTypes) !== -1) {
+            formData.append('image', this.file)
+				    formData.append('video', '')
+          }
+          else if($.inArray(fileType, videoTypes) !== -1) {
+            formData.append('image', '')
+				    formData.append('video', this.file)
+          }
 				}
-				
-				formData.append('image', this.file)
-				formData.append('video', '')
 				formData.append('thumbnail', '')
-				formData.append('description', this.description)
-				// for (var key of formData.entries()) {
-				// 	console.log(key[0] + ', ' + key[1])
-				// }
+        formData.append('description', this.description)
+        
         axios.post('/posts', formData,
           {headers: {
 						'Authorization': 'Bearer '+ this.token,
@@ -98,12 +133,12 @@
 		},
 		created() {
 			if(this.breakpoint === false) {
-				$('body').css({'overflow':'hidden'})
+				$('body').css({'overflow':'hidden', 'padding-right':'15px'})
 			}
 		},
 		destroyed() {
 			if(this.breakpoint === false) {
-				$('body').css({'overflow':'visible'})
+				$('body').css({'overflow':'visible', 'padding-right':'0'})
 			}
 		},
 		components: {
@@ -196,6 +231,42 @@
 					opacity: 0;
 					cursor: pointer;
 				}
+
+        &-preview {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          pointer-events: none;
+
+          &-img {
+            pointer-events: auto;
+
+            & img {
+              width: 32rem;
+              height: 32rem;
+              object-fit: cover;
+              
+              @include breakpoint(desktop) {
+                width: 50rem;
+                height: 50rem;
+              }
+            }
+          }
+
+          &-video {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            pointer-events: auto;
+
+            & video {
+              width: 100%;
+            }
+          }
+        }
 
 				&-mark {
 					width: 4.4rem;

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition name="fade" mode="out-in">
-      <router-view :key="$route.path"></router-view>
+      <router-view></router-view>
     </transition>
   </div>
 </template>
@@ -25,7 +25,7 @@
   }
 
   .fade-leave-active {
-    transition: opacity 0s ease;
+    transition: opacity 0.1s ease;
     opacity: 0;
   }
 </style>

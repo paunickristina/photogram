@@ -45,9 +45,10 @@
         axios.get('/likes', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {likable_id: this.post_id, likable_type: 1, page: this.page, amount: this.amount}})
           .then(response => {
             console.log(response)
-            for(let i = 0; i < response.data.data.length; i++) {
-              this.followers.push(response.data.data[i])
-            }
+            // for(let i = 0; i < response.data.data.length; i++) {
+            //   this.followers.push(response.data.data[i])
+            // }
+            this.followers = response.data.data
             this.$store.dispatch('getAllLikes', this.followers)
             this.loading = true
           })
@@ -57,12 +58,12 @@
     created() {
       this.getLikes()
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'hidden'})
+        $('body').css({'overflow':'hidden', 'padding-right':'15px'})
       }
     },
     destroyed() {
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'visible'})
+        $('body').css({'overflow':'visible', 'padding-right':'0'})
       }
     },
     components: {

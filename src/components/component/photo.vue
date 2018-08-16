@@ -9,7 +9,7 @@
           </div>
           <p>{{ post.username }}</p>
         </router-link>
-        <router-link tag="button" :to="{ name: 'editPost', params: {post_id: post_id} }" class="c-btn c-btn--small" v-if="buttonShow">Edit Post</router-link>
+        <!-- <router-link tag="button" :to="{ name: 'editPost', params: {post_id: post_id} }" class="c-btn c-btn--small" v-if="buttonShow">Edit Post</router-link> -->
         <div class="c-photo__close" @click="$router.go(-1)">
           <icon name="times"></icon>
         </div>
@@ -194,12 +194,12 @@
     created() {
       this.getPost()
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'hidden'})
+        $('body').css({'overflow':'hidden', 'padding-right':'15px'})
       }
     },
     destroyed() {
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'visible'})
+        $('body').css({'overflow':'visible', 'padding-right':'0'})
       }
     },
     components: {
@@ -575,10 +575,10 @@
       }
 
       &.userPage {
-        top: 33.7rem;
+        top: 27.7rem;
 
         @include breakpoint(desktop) {
-          top: 51rem;
+          top: 45.8rem;
         }
       }
 

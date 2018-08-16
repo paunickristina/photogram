@@ -52,9 +52,10 @@
         axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
           .then(response => {
             console.log(response)
-            for(let i = 0; i < response.data.data.length; i++) {
-              this.comments.push(response.data.data[i])
-            }
+            // for(let i = 0; i < response.data.data.length; i++) {
+            //   this.comments.push(response.data.data[i])
+            // }
+            this.comments = response.data.data
             this.$store.dispatch('getAllComments', this.comments)
             console.log(this.comments)
             this.loading = true
@@ -93,12 +94,12 @@
     created() {
       this.getComments()
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'hidden'})
+        $('body').css({'overflow':'hidden', 'padding-right':'15px'})
       }
     },
     destroyed() {
       if(this.breakpoint === false) {
-        $('body').css({'overflow':'visible'})
+        $('body').css({'overflow':'visible', 'padding-right':'0'})
       }
     },
     components: {

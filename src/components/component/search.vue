@@ -83,9 +83,10 @@
 				axios.get('/search/users', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query}})
 					.then(response => {
 								console.log(response)
-								for(let i = 0; i < response.data.data.length; i++) {
-									this.followers.push(response.data.data[i])
-								}
+								// for(let i = 0; i < response.data.data.length; i++) {
+								// 	this.followers.push(response.data.data[i])
+								// }
+								this.followers = response.data.data
 					})
 					.catch(error => console.log(error))
 			},
@@ -93,10 +94,11 @@
 				axios.get('/search/hashtags', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query_tags}})
 					.then(response => {
 								console.log(response)
-								for(let i = 0; i < response.data.data.length; i++) {
-									this.tags.push(response.data.data[i])
-									console.log(this.tags)
-								}
+								// for(let i = 0; i < response.data.data.length; i++) {
+								// 	this.tags.push(response.data.data[i])
+								// }
+								this.tags = response.data.data
+								console.log(this.tags)
 					})
 					.catch(error => console.log(error))
 			},

@@ -1,4 +1,5 @@
 <template>
+<transition name="fade" mode="out-in">
 	<section class="p-user" v-if="loading">
     <div class="main-wrapper">
       <app-header :title="user.username" v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint)"></app-header>
@@ -7,6 +8,8 @@
           <p>{{ user.username }}</p>
           <img :src="storage + user.image.profile" alt="">
         </div>
+        <!-- remove this -->
+        <!-- <p>{{ $route.params.user_id }}</p> -->
         <div class="p-user__about-count">
           <p>{{ user.posts_count }}</p>
           <p>{{ user.followers_count }}</p>
@@ -52,6 +55,7 @@
       <app-footer></app-footer>
     </div> <!-- end .main-wrapper -->
 	</section> <!-- end .p-user -->
+</transition>
 </template>
 
 <script>
@@ -70,6 +74,7 @@
         user: {},
         title: '',
         posts: [],
+        posts: this.statePosts,
         amount: 12,
         page: 1
       }
@@ -77,7 +82,8 @@
     computed: {
       ...mapState({
         token: state => state.authentication.token,
-        userId: state => state.authentication.userId
+        userId: state => state.authentication.userId,
+        statePosts: state => state.authentication.userId
       }),
       buttonShow() {
         return this.userId == this.user_id
@@ -100,6 +106,16 @@
       storage,
       breakpoint
     },
+    watch: {
+      // '$route.params.user_id': function() {
+      //   this.getUser()
+      //   this.getUsersPosts()
+      // }
+      '$route.params.user_id'() {
+        this.getUser()
+        this.getUsersPosts()
+      }
+    },
     components: {
       appHeader: Header,
       appFooter: Footer,
@@ -120,9 +136,10 @@
         axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
         .then(response => {
           // console.log(response)
-          for(let i = 0; i < response.data.data.length; i++) {
-            this.posts.push(response.data.data[i])
-          }
+          // for(let i = 0; i < response.data.data.length; i++) {
+          //   this.posts.push(response.data.data[i])
+          // }
+          this.posts = response.data.data
           this.$store.dispatch('getAllPosts', this.posts)
           this.loading = true
         })
@@ -304,7 +321,7 @@
 
         @include breakpoint(desktop) {
           padding: 0.2rem 0rem 6rem 0rem;
-          width: 10rem;
+          width: 5.4rem;
           margin: 0 auto;
         }
 

@@ -1,14 +1,16 @@
 <template>
-  <section class="p-homepage" v-if="loading">
+  <div>
     <app-header :title='title' v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint) && (!uploadPage || !breakpoint)"></app-header>
-    <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage && !uploadPage) || !breakpoint">
-      <app-post :posts='posts'></app-post>
+    <section class="p-homepage" v-if="loading">
+      <section class="main-wrapper u-clearfix news-feed" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage && !uploadPage) || !breakpoint">
+        <app-post :posts='posts'></app-post>
+      </section>
     </section>
     <transition name="fade" mode="out-in">
       <router-view></router-view>
     </transition>
     <app-footer></app-footer>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -55,9 +57,10 @@
         axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, news_feed: 1}})
           .then(response => {
             console.log(response)
-            for(let i = 0; i < response.data.data.length; i++) {
-              this.posts.push(response.data.data[i])
-            }
+            // for(let i = 0; i < response.data.data.length; i++) {
+            //   this.posts.push(response.data.data[i])
+            // }
+            this.posts = response.data.data
             this.$store.dispatch('getAllPosts', this.posts)
             this.loading = true
           })
@@ -87,7 +90,7 @@
   }
 
   .fade-leave-active {
-    transition: opacity 0.1s ease;
+    transition: opacity 0.3s ease;
     opacity: 0;
   }
   
