@@ -21,11 +21,11 @@
   }
 
   .fade-enter-active {
-    transition: opacity 0.5s ease;
+    transition: opacity 1.4s ease;
   }
 
   .fade-leave-active {
-    transition: opacity 0.1s ease;
+    transition: opacity 0s ease;
     opacity: 0;
   }
 </style>

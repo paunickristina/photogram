@@ -1,6 +1,6 @@
 <template>
   <div class="c-follower__wrapper">
-    <div v-if="followers.length == 0  && likesPage" class="c-follower__no-follower">
+    <div v-if="followers.length == 0 && likesPage" class="c-follower__no-follower">
       <p>This post has no likes</p>
     </div>
     <div v-for="(follower, index) in followers" :key="index" class="c-follower__one-follower u-clearfix">
@@ -15,7 +15,7 @@
         <button @click="followUser(index); replaceBtn($event);" v-show="!authFollow(index) && !authUser(index)" class="c-btn c-btn--small c-btn--gray">Follow</button>
       </div>
     </div>
-  </div> <!-- end .c-follower__wrapper -->
+  </div>
 </template>
 
 <script>

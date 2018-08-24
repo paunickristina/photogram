@@ -21,11 +21,13 @@
 			</div>
 			<div class="c-search__people">
 				<app-follower :followers="followers"></app-follower>
+        <p class="c-search__people-results">{{ noPeople }}</p>
 			</div>
 			<div class="c-search__tags">
 				<div v-for="(tag, index) in tags" :key="index" class="c-search__tags-one">
 					<p>{{ tag }}</p>
 				</div>
+        <p class="c-search__tags-results">{{ noTags }}</p>
 			</div>
 		</div>
 		<app-footer></app-footer>
@@ -47,7 +49,9 @@
 				query: '',
 				query_tags: '',
 				followers: [],
-				tags: []
+        tags: [],
+        noPeople: '',
+        noTags: ''
 			}
 		},
 		validations: {
@@ -61,20 +65,19 @@
 		computed: {
 			...mapState({
         token: state => state.authentication.token
-      }),
-			// storage() {
-			// 	return 'http://54.37.227.57/storage/'
-			// }
+      })
 		},
 		watch: {
 			query(val) {
 				if(val == '') {
-					this.followers = []
+          this.followers = []
+          this.noPeople = ''
 				}
 			},
 			query_tags(val) {
 				if(val == '') {
-					this.tags = []
+          this.tags = []
+          this.noTags = ''
 				}
 			}
 		},
@@ -82,23 +85,28 @@
 			getPeople() {
 				axios.get('/search/users', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query}})
 					.then(response => {
-								console.log(response)
-								// for(let i = 0; i < response.data.data.length; i++) {
-								// 	this.followers.push(response.data.data[i])
-								// }
-								this.followers = response.data.data
+            console.log(response)
+            this.followers = response.data.data
+            if(response.data.data.length == 0) {
+              this.noPeople = 'No results'
+            }
+            else {
+              this.noPeople = ''
+            }
 					})
 					.catch(error => console.log(error))
 			},
 			getTags() {
 				axios.get('/search/hashtags', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {q: this.query_tags}})
 					.then(response => {
-								console.log(response)
-								// for(let i = 0; i < response.data.data.length; i++) {
-								// 	this.tags.push(response.data.data[i])
-								// }
-								this.tags = response.data.data
-								console.log(this.tags)
+            console.log(response)
+            this.tags = response.data.data
+            if(response.data.data.length == 0) {
+              this.noTags =  'No results'
+            }
+            else {
+              this.noTags = ''
+            }
 					})
 					.catch(error => console.log(error))
 			},
@@ -242,6 +250,11 @@
 				margin-top: 5.7rem;
 				padding: 0;
 			}
+
+      &-results {
+        color: red;
+        @include fontSizeRem(14, 20);
+      }
 		}
 		
 		&__btn {
@@ -276,6 +289,11 @@
 					color: $gray;
 				}
 			}
+
+      &-results {
+        color: red;
+        @include fontSizeRem(14, 20);
+      }
 		}
 	}
 </style>

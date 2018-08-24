@@ -60,7 +60,7 @@
             <path id="Union_7" data-name="Union 7" class="cls-1" d="M4.028,13.662a9.6,9.6,0,1,1,3.278,3.861L0,20.306Z" transform="translate(6287 -476)"/>
           </svg>
         </div>
-        <router-link tag="div" :to="{ name: likesRoute, params: {post_id: post.id} }" class="c-post__likes-right">
+        <router-link tag="div" :to="{ name: likesRoute, params: {post_id: post.id, likes_count: post.likes_count} }" class="c-post__likes-right">
           <img src="../../assets/images/heart.png" alt="">
           <p>{{ post.likes_count }} likes</p>
         </router-link>
@@ -79,7 +79,7 @@
           <p>{{ comment.body }}</p>
         </div>
         <div class="c-post__comments-comments">
-          <router-link tag="p" :to="{ name: commentsRoute, params: {post_id: post.id} }" v-if="post.comments.length > 0">view all comments</router-link>
+          <router-link tag="p" :to="{ name: commentsRoute, params: {post_id: post.id, comments_count: post.comments_count} }" v-if="post.comments.length > 0">view all comments</router-link>
         </div>
       </div>
     </div>
@@ -409,7 +409,6 @@
       width: 32rem;
       height: 32rem;
       margin-bottom: 0.9rem;
-      background: $gray; //remove
 
       @include breakpoint(desktop) {
         width: 100%;

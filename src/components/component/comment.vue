@@ -1,8 +1,9 @@
 <template>
     <div class="c-comment__wrapper">
       <div class="c-comment__overflow-hidden">
-        <div class="c-comment__overflow-auto">
+        <div class="c-comment__overflow-auto" ref="scrollDiv">
           <div class="c-comment__close" @click="$router.go(-1)">
+          <!-- <div class="c-comment__close" @click="$router.matched[0]"> -->
             <icon name="times"></icon>
           </div>
           <div v-for="(comment, index) in comments" :key="index" class="c-comment__one-comment u-clearfix">
@@ -26,9 +27,12 @@
               <p @click="deleteComment(index)" v-if="userComment(index) || editPostPage || userCommentsPage">delete</p>
             </div>
           </div>
-        </div> <!-- end .c-comment__overflow-auto -->
-      </div> <!-- end .c-comment__overflow-hidden -->
-    </div> <!-- end .c-comment__wrapper -->
+          <div class="c-comment__one-comment-spinner" v-if="spinner">
+            <icon name="sync" spin></icon>
+          </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -37,11 +41,12 @@
   import { storage } from '../../functions.js'
   
   export default {
-    props: ['comments', 'comment_body', 'reply_username', 'id_comment', 'post_id'],
+    props: ['comments', 'comment_body', 'reply_username', 'id_comment', 'post_id', 'spinner'],
     data() {
       return {
         reply_user: this.reply_username,
-        comment_id: this.id_comment
+        comment_id: this.id_comment,
+        // parent_route: ''
       }
     },
     computed: {
@@ -57,6 +62,10 @@
         return this.$route.path === '/user/' + this.userId + '/user-comments/' + this.post_id
       },
       storage
+    },
+    created() {
+      // console.log(this.$route.matched[0].path)
+      // this.parent_route = this.$route.matched[0].path
     },
     methods: {
       deleteComment(index) {
@@ -123,9 +132,7 @@
 .c-comment {
 
   &__wrapper {
-    margin-top: 1.2rem;
-    padding-left: 1.8rem;
-    padding-right: 1.8rem;
+    padding: 1.2rem 1.8rem 0;
 
     @include breakpoint(desktop) {
       width: 43.4rem;
@@ -273,6 +280,22 @@
         @include fontSizeRem(12, 14);
         cursor: pointer;
         margin-top: 0.5rem;
+      }
+    }
+
+    &-spinner {
+      text-align: center;
+      margin-top: 4rem;
+      margin-bottom: 2rem;
+
+      @include breakpoint(desktop) {
+        margin-top: 5rem;
+        margin-bottom: 4rem;
+      }
+
+      & .fa-icon {
+        width: 3.5rem;
+        height: 3.5rem;
       }
     }
   }

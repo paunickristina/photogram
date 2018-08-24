@@ -1,9 +1,11 @@
 <template>
-  <div class="p-comments" v-if="loading">
+  <div class="p-comments">
     <app-header :title="title" v-if="breakpoint"></app-header>
     <div class="p-comments__comment">
-      <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" @event="id_comment = $event; reply_username = $event;"></app-comment>
-      <div class="p-comments__comment-form">
+      <div class="p-comments__comment-scroll">
+        <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" :spinner="spinner" @event="id_comment = $event; reply_username = $event;"></app-comment>
+      </div>
+      <div class="p-comments__comment-form" ref="lala">
         <form @submit.prevent="postComment">
           <div class="p-comments__comment-form-field">
             <svg viewBox="6284.636 -477 25.678 23.277">
@@ -15,9 +17,9 @@
             </button>
           </div>
         </form>
-       </div> <!-- end .c-comment__form -->
-     </div> <!-- end .c-comment -->
-  </div> <!--  end .p-comments -->
+       </div>
+     </div>
+  </div>
 </template>
 
 <script>
@@ -28,17 +30,47 @@
   import { breakpoint } from '../../functions.js'
   
 	export default {
-    props: ['post_id'],
+    props: ['post_id', 'comments_count'],
     data() {
       return {
-        loading: false,
+        spinner: false,
         title: 'Comments',
         comments: [],
         reply_username: '',
         comment_body: '',
-        amount: 8,
+        amount: 12,
         page: 1,
         id_comment: ''
+      }
+    },
+    // mounted() {
+    //   console.log(this.$route.matched)
+    // },
+    created() {
+      this.getComments()
+      if(this.breakpoint === false) {
+        $('body').css({'overflow':'hidden', 'padding-right':'15px'})
+      }
+    },
+    mounted() {
+      if(this.breakpoint === true) {
+        window.addEventListener('load', () => {
+          window.addEventListener('scroll', this.infiniteScroll)
+        })
+      }
+      else {
+        let $overflow = document.querySelector('.c-comment__overflow-auto')
+        $overflow.addEventListener('scroll', this.infiniteScroll)
+      }
+    },
+    destroyed() {
+      if(this.breakpoint === true) {
+        window.removeEventListener('scroll', this.infiniteScroll)
+      }
+      else {
+        let $overflow = document.querySelector('.c-comment__overflow-auto')
+        $overflow.removeEventListener('scroll', this.infiniteScroll)
+        $('body').css({'overflow':'visible', 'padding-right':'0'})
       }
     },
     computed: {
@@ -48,58 +80,70 @@
       breakpoint
     },
     methods: {
+      infiniteScroll() {
+        if(this.breakpoint === true) {
+          if($(window).scrollTop() === $(document).height() - $(window).height()) {
+            window.removeEventListener('scroll', this.infiniteScroll)
+            if(this.comments_count > this.comments.length) {
+              this.getComments()
+            }
+          }
+        }
+        else {
+          let $overflow = document.querySelector('.c-comment__overflow-auto')
+          if($overflow.scrollTop === $overflow.scrollHeight - $overflow.clientHeight) {
+            $overflow.removeEventListener('scroll', this.infiniteScroll)
+            if(this.comments_count > this.comments.length) {
+              this.getComments()
+            }
+          }
+        }
+      },
       getComments() {
-        axios.get('/comments', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
+        this.spinner = true
+        axios.get('/comments', {headers: {'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, post_id: this.post_id}})
           .then(response => {
             console.log(response)
-            // for(let i = 0; i < response.data.data.length; i++) {
-            //   this.comments.push(response.data.data[i])
-            // }
-            this.comments = response.data.data
+            for(let i = 0; i < response.data.data.length; i++) {
+              this.comments.push(response.data.data[i])
+            }
+            if(response.data.data.length > 0) {
+              this.page++
+            }
+            if(this.breakpoint === true) {
+              window.addEventListener('scroll', this.infiniteScroll)
+            }
+            else {
+              if(this.page > 1) {
+                let $overflow = document.querySelector('.c-comment__overflow-auto')
+                $overflow.addEventListener('scroll', this.infiniteScroll)
+              }
+            }
+            this.spinner = false
             this.$store.dispatch('getAllComments', this.comments)
-            console.log(this.comments)
-            this.loading = true
           })
           .catch(error => console.log(error))
       },
       postComment() {
         if(this.id_comment == '') {
-          axios.post('/comments', 
-          {post_id: this.post_id, reply_username: this.reply_username, body: this.comment_body},
-            {headers: {'Authorization': 'Bearer '+ this.token}}
-          )
+          axios.post('/comments', {post_id: this.post_id,reply_username: this.reply_username,body: this.comment_body}, {headers: {'Authorization': 'Bearer '+ this.token}})
           .then(response => {
-            // console.log(response)
             // this.$store.dispatch('getAllComments', this.comments)
           })
           .catch(error => console.log(error))
-
           const $input = $('.p-comments__comment-form').find('input');
           $input.blur().val('');
         }
         else {
           axios.patch('/comments/' + this.id_comment, 
             {body: this.comment_body},
-            {headers:{ 'Authorization': 'Bearer '+ this.token}}
+            {headers: {'Authorization': 'Bearer '+ this.token}}
           )
           .then(response => {
-            // console.log(response)
             // this.$store.dispatch('getAllComments', this.comments)
           })
           .catch(error => console.log(error))
         }
-        
-      }
-    },
-    created() {
-      this.getComments()
-      if(this.breakpoint === false) {
-        $('body').css({'overflow':'hidden', 'padding-right':'15px'})
-      }
-    },
-    destroyed() {
-      if(this.breakpoint === false) {
-        $('body').css({'overflow':'visible', 'padding-right':'0'})
       }
     },
     components: {
@@ -134,6 +178,7 @@
         left: 0;
         bottom: 4.2rem;
         border-top: 0.1rem solid rgba(149, 152, 154, 0.5);
+        background: $white;
 
         @include breakpoint(desktop) {
           position: static;

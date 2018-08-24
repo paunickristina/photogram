@@ -84,9 +84,9 @@
               </g>
             </svg>
           </router-link>
-        </div> <!-- end .c-header__wrap -->
-    </div> <!-- end .main-wrapper -->
-  </div> <!-- end .c-header -->
+        </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -113,6 +113,12 @@
 	@import "../../assets/scss/settings/_module-settings.scss";
 	
   .c-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: $white;
+      z-index: 100;
 
     &__wrap {
       display: flex;
@@ -122,10 +128,6 @@
 
       @include breakpoint(desktop) {
         padding: 1rem 1.6rem 1.5rem;
-        // position: fixed; //check
-        // top: 0;
-        // left: 0;
-        // width: 100%;
       }
     }
 

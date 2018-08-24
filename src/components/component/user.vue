@@ -1,37 +1,36 @@
 <template>
-<transition name="fade" mode="out-in">
-	<section class="p-user" v-if="loading">
+	<section class="p-user" :key="$route.params.user_id">
     <div class="main-wrapper">
       <app-header :title="user.username" v-if="(!commentsPage || !breakpoint) && (!photoPage || !breakpoint) && (!likesPage || !breakpoint) && (!editPostPage || !breakpoint)"></app-header>
-      <div class="p-user__about" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
-        <div class="p-user__about-img">
-          <p>{{ user.username }}</p>
-          <img :src="storage + user.image.profile" alt="">
-        </div>
-        <!-- remove this -->
-        <!-- <p>{{ $route.params.user_id }}</p> -->
-        <div class="p-user__about-count">
-          <p>{{ user.posts_count }}</p>
-          <p>{{ user.followers_count }}</p>
-          <p>{{ user.following_count }}</p>
-        </div>
-        <div class="p-user__about-post">
-          <p>posts</p>
-          <p>followers</p>
-          <p>following</p>
-        </div>
-        <div class="p-user__about-text">
-          <!-- <p>Photography lover, animals are friends, be happy.</p> -->
-          <p>{{ user.about }}</p>
-        </div>
-        <div class="p-user__about-btn" v-if="buttonShow">
-          <router-link to="/edit-profile">
-            <button class="c-btn c-btn--small">Edit profile</button>
-          </router-link>
-          <button class="c-btn c-btn--small" @click="logOut">Log out</button>
-        </div>
-        <div class="p-user__about-btn p-user__about-btn--single" v-else>
-          <button class="c-btn c-btn--small c-btn--gray">Following</button>
+      <div v-if="loading">
+        <div class="p-user__about" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
+          <div class="p-user__about-img">
+            <p>{{ user.username }}</p>
+            <img :src="storage + user.image.profile" alt="">
+          </div>
+          <div class="p-user__about-count">
+            <p>{{ user.posts_count }}</p>
+            <p>{{ user.followers_count }}</p>
+            <p>{{ user.following_count }}</p>
+          </div>
+          <div class="p-user__about-post">
+            <p>posts</p>
+            <p>followers</p>
+            <p>following</p>
+          </div>
+          <div class="p-user__about-text">
+            <!-- <p>Animals are friends, be happy.</p> -->
+            <p>{{ user.about }}</p>
+          </div>
+          <div class="p-user__about-btn" v-if="buttonShow">
+            <router-link to="/edit-profile">
+              <button class="c-btn c-btn--small">Edit profile</button>
+            </router-link>
+            <button class="c-btn c-btn--small" @click="logOut">Log out</button>
+          </div>
+          <div class="p-user__about-btn p-user__about-btn--single" v-else>
+            <button class="c-btn c-btn--small c-btn--gray">Following</button>
+          </div>
         </div>
       </div>
       <div class="p-user__posts" v-if="(!commentsPage && !photoPage && !likesPage && !editPostPage) || !breakpoint">
@@ -47,15 +46,19 @@
             </svg>
           </div>
         </div>
-        <app-post :posts='posts'></app-post>
+        <div class="p-user__posts-scroll">
+          <app-post :posts='posts'></app-post>
+          <div class="p-user__posts-scroll-spinner"  v-if="spinner">
+            <icon name="sync" spin></icon>
+          </div>
+        </div>
       </div>
-      <transition name="fade" mode="out-in">
+      <transition name="fade-fast" mode="out-in">
         <router-view></router-view>
       </transition>
       <app-footer></app-footer>
-    </div> <!-- end .main-wrapper -->
-	</section> <!-- end .p-user -->
-</transition>
+    </div>
+	</section>
 </template>
 
 <script>
@@ -67,24 +70,44 @@
   import { storage, breakpoint } from '../../functions.js'
   
 	export default {
-		props: ['user_id'],
+    props: ['user_id'],
     data() {
       return {
         loading: false,
+        busy: false,
+        spinner: false,
         user: {},
         title: '',
         posts: [],
-        posts: this.statePosts,
+        // posts: this.statePosts,
         amount: 12,
-        page: 1
+        page: 1,
+        posts_count: null
       }
+    },
+    watch: {
+      '$route.params.user_id'() {
+        this.page = 1
+        this.posts = []
+        this.posts_count = null
+        this.getUser()
+        this.getUsersPosts()
+      }
+    },
+    created() {
+      this.getUser()
+      this.getUsersPosts()
+      window.addEventListener('scroll', this.infiniteScroll)
     },
     computed: {
       ...mapState({
         token: state => state.authentication.token,
         userId: state => state.authentication.userId,
-        statePosts: state => state.authentication.userId
+        // statePosts: state => state.authentication.userId
       }),
+      userPage() {
+        return this.$route.name === 'user'
+      },
       buttonShow() {
         return this.userId == this.user_id
       },
@@ -100,48 +123,44 @@
       editPostPage() {
         return this.$route.name === 'userEditPost'
       },
-      // uploadPage() {
-      //   return this.$route.name === 'userUpload'
-      // },
       storage,
       breakpoint
     },
-    watch: {
-      // '$route.params.user_id': function() {
-      //   this.getUser()
-      //   this.getUsersPosts()
-      // }
-      '$route.params.user_id'() {
-        this.getUser()
-        this.getUsersPosts()
-      }
-    },
-    components: {
-      appHeader: Header,
-      appFooter: Footer,
-      appPost: Post
-    },
     methods: {
+      infiniteScroll() {
+        if(this.userPage === true) {
+          if($(window).scrollTop() === $(document).height() - $(window).height()) {
+            window.removeEventListener('scroll', this.infiniteScroll)
+            if(this.posts_count > this.posts.length) {
+              this.getUsersPosts()
+            }
+          }
+        }
+      },
       getUser() {
         axios.get('/users/find', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, id: this.user_id}})
         .then(response => {
-          // console.log(response)
           this.user = response.data.data
           this.title = response.data.data.username
+          this.posts_count = response.data.data.posts_count
           this.loading = true
         })
         .catch(error => console.log(error))
       },
       getUsersPosts() {
+        this.spinner = true
         axios.get('/posts', {headers:{ 'Authorization': 'Bearer '+ this.token}, params: {amount: this.amount, page: this.page, user_id: this.user_id}})
         .then(response => {
-          // console.log(response)
-          // for(let i = 0; i < response.data.data.length; i++) {
-          //   this.posts.push(response.data.data[i])
-          // }
-          this.posts = response.data.data
+          console.log(response)
+          for(let i = 0; i < response.data.data.length; i++) {
+            this.posts.push(response.data.data[i])
+          }
+          if(response.data.data.length > 0) {
+            this.page++
+          }
+          this.spinner = false
           this.$store.dispatch('getAllPosts', this.posts)
-          this.loading = true
+          window.addEventListener('scroll', this.infiniteScroll)
         })
         .catch(error => console.log(error))
       },
@@ -167,9 +186,10 @@
         }
       }
     },
-    created() {
-      this.getUser()
-      this.getUsersPosts()
+    components: {
+      appHeader: Header,
+      appFooter: Footer,
+      appPost: Post
     }
 	}
     
@@ -178,21 +198,27 @@
 <style lang="scss" scoped>
   @import "../../assets/scss/settings/_module-settings.scss";
 
-  .fade-enter {
+  .fade-fast-enter {
     opacity: 0;
   }
 
-  .fade-enter-active {
+  .fade-fast-enter-active {
     transition: opacity 0.5s ease;
   }
 
-  .fade-leave-active {
+  .fade-fast-leave-active {
     transition: opacity 0.1s ease;
     opacity: 0;
   }
   
   .p-user {
-    padding-bottom: 10rem;
+    padding-bottom: 8rem;
+    margin-top: 4.1rem;
+
+    @include breakpoint(desktop) {
+      margin-top: 8.2rem;
+      padding-bottom: 10rem;
+    }
 
     &__about {
       display: flex;
@@ -370,6 +396,22 @@
                 stroke: red;
               }
             }
+          }
+        }
+      }
+
+      &-scroll {
+        &-spinner {
+          text-align: center;
+          margin-top: 4rem;
+
+          @include breakpoint(desktop) {
+            margin-top: 0;
+          }
+
+          & .fa-icon {
+            width: 5rem;
+            height: 5rem;
           }
         }
       }
