@@ -117,7 +117,8 @@ const routes = [
 			}
 		},
 		children: [
-			{path: '/photo/:post_id', component: Photo, name: 'photo', props: true},
+			// {path: '/photo/:post_id', component: Photo, name: 'photo', props: true},
+			{path: '/photo', component: Photo, name: 'photo', props: true},
 			{path: '/comments/:post_id', component: Comments, name: 'comments', props: true},
 			{path: '/likes/:post_id', component: Likes, name: 'likes', props: true},
 			// {path: '/edit-post/:post_id', component: EditPost, name: 'editPost', props: true},
@@ -134,7 +135,8 @@ const routes = [
 			}
 		},
 		children: [
-			{path: '/user/:user_id/user-photo/:post_id', component: Photo, name: 'userPhoto', props: true},
+			// {path: '/user/:user_id/user-photo/:post_id', component: Photo, name: 'userPhoto', props: true},
+			{path: '/user/:user_id/user-photo', component: Photo, name: 'userPhoto', props: true},
 			{path: '/user/:user_id/user-comments/:post_id', component: Comments, name: 'userComments', props: true},
 			{path: '/user/:user_id/user-likes/:post_id', component: Likes, name: 'userLikes', props: true},
 			// {path: '/user/:user_id/user-edit-post/:post_id', component: EditPost, name: 'userEditPost', props: true},

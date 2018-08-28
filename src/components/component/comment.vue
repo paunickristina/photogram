@@ -1,7 +1,8 @@
 <template>
     <div class="c-comment__wrapper">
       <div class="c-comment__overflow-hidden">
-        <div class="c-comment__overflow-auto" ref="scrollDiv">
+        <!-- <div class="c-comment__overflow-auto" ref="scrollDiv"> -->
+        <div class="c-comment__overflow-auto">
           <div class="c-comment__close" @click="$router.go(-1)">
           <!-- <div class="c-comment__close" @click="$router.matched[0]"> -->
             <icon name="times"></icon>

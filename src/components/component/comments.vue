@@ -5,7 +5,7 @@
       <div class="p-comments__comment-scroll">
         <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" :spinner="spinner" @event="id_comment = $event; reply_username = $event;"></app-comment>
       </div>
-      <div class="p-comments__comment-form" ref="lala">
+      <div class="p-comments__comment-form">
         <form @submit.prevent="postComment">
           <div class="p-comments__comment-form-field">
             <svg viewBox="6284.636 -477 25.678 23.277">
@@ -62,6 +62,7 @@
         let $overflow = document.querySelector('.c-comment__overflow-auto')
         $overflow.addEventListener('scroll', this.infiniteScroll)
       }
+      console.log(this.$route.matched[1].parent)
     },
     destroyed() {
       if(this.breakpoint === true) {

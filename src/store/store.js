@@ -25,6 +25,16 @@ export default new Vuex.Store({
     },
     getLikes(state, allLikes) {
       state.likes = allLikes
+    },
+    changePost(state, newPost) {
+      state.post = newPost
+    },
+    editPostLikes(state, newLikes) {
+      state.post.auth_like_id = newLikes.auth_like_id
+      state.post.likes_count = newLikes.likes_count
+    },
+    editComments(state, newComments) {
+      state.post.comments = newComments
     }
   },
   actions: {
@@ -39,6 +49,15 @@ export default new Vuex.Store({
     },
     getAllLikes({commit}, allLikes) {
       commit('getLikes', allLikes)
+    },
+    changeOnePost({commit}, newPost) {
+      commit('changePost', newPost)
+    },
+    changePostLikes({commit}, newLikes) {
+      commit('editPostLikes', newLikes)
+    },
+    changeComments({commit}, newComments) {
+      commit('editComments', newComments)
     }
   }, 
   getters: {
