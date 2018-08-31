@@ -3,7 +3,7 @@
     <app-header :title="title" v-if="breakpoint"></app-header>
     <div class="p-comments__comment">
       <div class="p-comments__comment-scroll">
-        <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" :spinner="spinner" @event="id_comment = $event; reply_username = $event;"></app-comment>
+        <app-comment :comments="comments" :post_id="post_id" :comment_body="comment_body" :id_comment="id_comment" :reply_username="reply_username" :postIndex="postIndex" :spinner="spinner" @event="id_comment = $event; reply_username = $event;"></app-comment>
       </div>
       <div class="p-comments__comment-form">
         <form @submit.prevent="postComment">
@@ -43,9 +43,6 @@
         id_comment: ''
       }
     },
-    // mounted() {
-    //   console.log(this.$route.matched)
-    // },
     created() {
       this.getComments()
       if(this.breakpoint === false) {
@@ -62,7 +59,6 @@
         let $overflow = document.querySelector('.c-comment__overflow-auto')
         $overflow.addEventListener('scroll', this.infiniteScroll)
       }
-      console.log(this.$route.matched[1].parent)
     },
     destroyed() {
       if(this.breakpoint === true) {
@@ -76,8 +72,16 @@
     },
     computed: {
       ...mapState({
-        token: state => state.authentication.token
+        token: state => state.authentication.token,
+        statePosts: state => state.posts
       }),
+      postIndex() {
+        let idPost = this.statePosts.map(function(current){
+          return current.id
+        })
+        let indexPost = idPost.indexOf(this.post_id)
+        return indexPost
+      },
       breakpoint
     },
     methods: {
@@ -127,9 +131,18 @@
       },
       postComment() {
         if(this.id_comment == '') {
-          axios.post('/comments', {post_id: this.post_id,reply_username: this.reply_username,body: this.comment_body}, {headers: {'Authorization': 'Bearer '+ this.token}})
+          axios.post('/comments', {post_id: this.post_id, reply_username: this.reply_username, body: this.comment_body}, {headers: {'Authorization': 'Bearer '+ this.token}})
           .then(response => {
-            // this.$store.dispatch('getAllComments', this.comments)
+            console.log(response)
+            //check this
+            this.comments.unshift(response.data.data)
+            const payload = {
+              i: this.postIndex,
+              comments: this.comments,
+              comment: response.data.data
+            }
+            this.$store.dispatch('changeComments', payload)
+            this.comment_body = ''
           })
           .catch(error => console.log(error))
           const $input = $('.p-comments__comment-form').find('input');
@@ -141,7 +154,7 @@
             {headers: {'Authorization': 'Bearer '+ this.token}}
           )
           .then(response => {
-            // this.$store.dispatch('getAllComments', this.comments)
+            // this.$store.dispatch('',)
           })
           .catch(error => console.log(error))
         }

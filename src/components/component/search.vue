@@ -149,6 +149,11 @@
   @import "../../assets/scss/settings/_module-settings.scss";
 	
 	.c-search {
+		margin-top: 4.1rem;
+
+		@include breakpoint(desktop) {
+			margin-top: 8.2rem;
+		}
 
 		&__wrapper {
 			@include breakpoint(desktop) {

@@ -11,8 +11,8 @@
         <p><router-link tag="span" :to="{ name: 'user', params: {user_id: followerId(index)}}" :class="{ bold: likesPage }">{{ follower.username}}</router-link><span v-if="likesPage"> liked this post</span></p>
       </div>
       <div class="c-follower__btn" :class="{ left: likesPage }">
-        <button @click="unfollowUser(index); replaceBtn($event)" v-show="authFollow(index) && !authUser(index)" class="c-btn c-btn--small">Unfollow</button>
-        <button @click="followUser(index); replaceBtn($event);" v-show="!authFollow(index) && !authUser(index)" class="c-btn c-btn--small c-btn--gray">Follow</button>
+        <button @click="unfollowUser(index, $event)" v-show="authFollow(index) && !authUser(index)" class="c-btn c-btn--small">Unfollow</button>
+        <button @click="followUser(index, $event);" v-show="!authFollow(index) && !authUser(index)" class="c-btn c-btn--small c-btn--gray">Follow</button>
       </div>
     </div>
   </div>
@@ -45,22 +45,22 @@
       followerId(index) {
         return this.followers[index].id
       },
-      followUser(index) {
+      followUser(index, e) {
         const user_id = this.followers[index].id
         axios.post('/followers', 
           {user_id: user_id},
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          // console.log(response)
+          this.replaceBtn(e)
         })
         .catch(error => console.log(error))
       },
-      unfollowUser(index) {
+      unfollowUser(index, e) {
         const user_id = this.followers[index].id
         axios.delete('/followers/' + user_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
         .then(response => {
-          // console.log(response)
+          this.replaceBtn(e)
         })
         .catch(error => console.log(error))
       },

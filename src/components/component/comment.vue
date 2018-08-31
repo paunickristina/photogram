@@ -1,10 +1,8 @@
 <template>
     <div class="c-comment__wrapper">
       <div class="c-comment__overflow-hidden">
-        <!-- <div class="c-comment__overflow-auto" ref="scrollDiv"> -->
         <div class="c-comment__overflow-auto">
           <div class="c-comment__close" @click="$router.go(-1)">
-          <!-- <div class="c-comment__close" @click="$router.matched[0]"> -->
             <icon name="times"></icon>
           </div>
           <div v-for="(comment, index) in comments" :key="index" class="c-comment__one-comment u-clearfix">
@@ -42,13 +40,16 @@
   import { storage } from '../../functions.js'
   
   export default {
-    props: ['comments', 'comment_body', 'reply_username', 'id_comment', 'post_id', 'spinner'],
+    props: ['comments', 'comment_body', 'reply_username', 'id_comment', 'post_id', 'postIndex', 'spinner'],
     data() {
       return {
         reply_user: this.reply_username,
         comment_id: this.id_comment,
-        // parent_route: ''
+        allComments: this.comments
       }
+    },
+    created() {
+      console.log(this.postIndex)
     },
     computed: {
       ...mapState({
@@ -64,17 +65,19 @@
       },
       storage
     },
-    created() {
-      // console.log(this.$route.matched[0].path)
-      // this.parent_route = this.$route.matched[0].path
-    },
     methods: {
       deleteComment(index) {
         const comment_id = this.comments[index].id
         axios.delete('/comments/' + comment_id, {headers:{ 'Authorization': 'Bearer '+ this.token}})
         .then(response => {
-          // console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          console.log(response)
+          //check this
+          this.allComments.splice(index, 1)
+          const payload = {
+            i: this.postIndex,
+            comments: this.allComments
+          }
+          this.$store.dispatch('deleteOneComment', payload)
         })
         .catch(error => console.log(error))
       },
@@ -105,8 +108,13 @@
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          // console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          console.log(response)
+          const payload = {
+            i: index,
+            auth_like_id: response.data.data.id,
+            likes_count: this.allComments[index].likes_count + 1
+          }
+          this.$store.dispatch('changeCommentLikes', payload)
         })
         .catch(error => console.log(error))
       },
@@ -115,8 +123,13 @@
         axios.delete('/likes/' + like_id, {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          // console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          console.log(response)
+          const payload = {
+            i: index,
+            auth_like_id: null,
+            likes_count: this.allComments[index].likes_count - 1
+          }
+          this.$store.dispatch('changeCommentLikes', payload)
         })
         .catch(error => console.log(error))
       },

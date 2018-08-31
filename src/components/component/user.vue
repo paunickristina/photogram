@@ -47,7 +47,9 @@
           </div>
         </div>
         <div class="p-user__posts-scroll">
-          <app-post :posts='posts'></app-post>
+          <!-- <app-post :posts='posts' :posts_count="posts_count" @newPosts="posts = $event"></app-post> -->
+          <app-post v-if="posts.length > 0" :posts='posts' :posts_count="posts_count" @deletedPost="posts_count = $event"></app-post>
+          <!-- <app-post v-if="posts.length > 0" :posts='posts' :posts_count="posts_count"></app-post> -->
           <div class="p-user__posts-scroll-spinner"  v-if="spinner">
             <icon name="sync" spin></icon>
           </div>
@@ -79,12 +81,19 @@
         user: {},
         title: '',
         posts: [],
-        // posts: this.statePosts,
         amount: 12,
         page: 1,
         posts_count: null
       }
     },
+    created() {
+      this.getUser()
+      this.getUsersPosts()
+      window.addEventListener('scroll', this.infiniteScroll)
+    },
+    // updated() {
+    //   console.log(this.posts_count)
+    // },
     watch: {
       '$route.params.user_id'() {
         this.page = 1
@@ -94,16 +103,11 @@
         this.getUsersPosts()
       }
     },
-    created() {
-      this.getUser()
-      this.getUsersPosts()
-      window.addEventListener('scroll', this.infiniteScroll)
-    },
     computed: {
       ...mapState({
         token: state => state.authentication.token,
         userId: state => state.authentication.userId,
-        // statePosts: state => state.authentication.userId
+        statePosts: state => state.posts
       }),
       userPage() {
         return this.$route.name === 'user'

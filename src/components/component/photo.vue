@@ -73,7 +73,7 @@
           </div>
         </div>
         <div @click="slideLeft" v-if="postIndex > 0" :class="{ userPage: authUserPage }" class="c-photo__arrow c-photo__arrow--left"></div>
-        <div @click="slideRight" v-if="postIndex < posts.length - 1" :class="{ userPage: authUserPage }" class="c-photo__arrow c-photo__arrow--right"></div>
+        <div @click="slideRight" v-if="postIndex < allPosts.length - 1" :class="{ userPage: authUserPage }" class="c-photo__arrow c-photo__arrow--right"></div>
       </div>
     </article> 
   </div>
@@ -86,7 +86,7 @@
   import { breakpoint, storage } from '../../functions.js'
   
   export default {
-    props: ['post_id', 'index'],
+    props: ['post_id', 'index', 'posts'],
     data() {
       return {
         loading: false,
@@ -94,7 +94,8 @@
         post: {},
         reply_username: '',
         comment_body: '',
-        postId: this.post_id
+        postId: this.post_id,
+        allPosts: this.posts
       }
     },
     created() {
@@ -112,7 +113,6 @@
       ...mapState({
         token: state => state.authentication.token,
         userId: state => state.authentication.userId,
-        posts: state => state.posts,
         statePost: state => state.post
       }),
       authUserPage() {
@@ -141,7 +141,7 @@
         return this.post.auth_like_id == null
       },
       postIndex() {
-        let idPost = this.posts.map(function(current){
+        let idPost = this.allPosts.map(function(current){
           return current.id
         })
         let indexPost = idPost.indexOf(this.postId)
@@ -151,30 +151,36 @@
       storage
     },
     watch: {
-      statePost (newPost, oldPost) {
+      statePost(newPost, oldPost) {
         this.postId = newPost.id
       },
-      postId (newValue, oldValue) {
+      postId(newValue, oldValue) {
         this.getPost()
       }
     },
     methods: {
       slideLeft() {
         if(this.postIndex > 0) {
-          this.$store.dispatch('changeOnePost', this.posts[this.postIndex - 1])
+          const payload = {
+            post: this.allPosts[this.postIndex - 1]
+          }
+          this.$store.dispatch('changeOnePost', payload)
         }
       },
       slideRight() {
-        if(this.postIndex < this.posts.length - 1) {
-          this.$store.dispatch('changeOnePost', this.posts[this.postIndex + 1])
+        if(this.postIndex < this.allPosts.length - 1) {
+          const payload = {
+            post: this.allPosts[this.postIndex + 1]
+          }
+          this.$store.dispatch('changeOnePost', payload)
         }
       },
       getPost() {
         axios.get('/posts/' + this.postId, {headers:{ 'Authorization': 'Bearer '+ this.token}})
           .then(response => {
             this.post = response.data.data
-            this.loading = true
             this.$store.dispatch('getOnePost', this.post)
+            this.loading = true
           })
           .catch(error => console.log(error))
       },
@@ -192,9 +198,13 @@
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
           this.post.comments.unshift(response.data.data)
-          this.$store.dispatch('changeComments', this.post.comments)
+          const payload = {
+            i: this.postIndex,
+            comments: this.post.comments
+          }
+          this.$store.dispatch('changePostComments', payload)
           this.comment_body = ''
         })
         .catch(error => console.log(error))
@@ -207,11 +217,11 @@
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
           const payload = {
+            i: this.postIndex,
             auth_like_id: response.data.data.id,
-            // likes_count: this.posts[this.postIndex].likes_count + 1
-            likes_count: this.statePost.likes_count + 1
+            likes_count: this.allPosts[this.postIndex].likes_count + 1
           }
           this.$store.dispatch('changePostLikes', payload)
         })
@@ -222,10 +232,11 @@
         axios.delete('/likes/' + like_id, {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
+          // console.log(response)
           const payload = {
+            i: this.postIndex,
             auth_like_id: null,
-            likes_count: this.statePost.likes_count - 1
+            likes_count: this.allPosts[this.postIndex].likes_count - 1
           }
           this.$store.dispatch('changePostLikes', payload)
         })

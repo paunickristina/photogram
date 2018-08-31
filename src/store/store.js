@@ -27,14 +27,41 @@ export default new Vuex.Store({
       state.likes = allLikes
     },
     changePost(state, newPost) {
-      state.post = newPost
+      state.post = newPost.post
     },
     editPostLikes(state, newLikes) {
+      state.posts[newLikes.i].auth_like_id = newLikes.auth_like_id,
+      state.posts[newLikes.i].likes_count = newLikes.likes_count,
       state.post.auth_like_id = newLikes.auth_like_id
       state.post.likes_count = newLikes.likes_count
     },
+    editPostComments(state, newComments) {
+      state.posts[newComments.i].comments = newComments.comments
+      state.post.comments = newComments.comments
+    },
+    editPostsLikes(state, newLikes) {
+      state.posts[newLikes.i].auth_like_id = newLikes.auth_like_id
+      state.posts[newLikes.i].likes_count = newLikes.likes_count
+    },
+    editPostsComments(state, newComments) {
+      state.posts[newComments.i].comments = newComments.comments
+    },
+    deletePost(state, newPosts) {
+      state.posts = newPosts.posts
+    },
     editComments(state, newComments) {
-      state.post.comments = newComments
+      state.comments = newComments.comments
+      state.posts[newComments.i].comments.unshift(newComments.comment)
+      state.posts[newComments.i].comments_count++
+    },
+    deleteComment(state, newComments) {
+      state.comments = newComments.comments
+      state.posts[newComments.i].comments = newComments.comments
+      state.posts[newComments.i].comments_count--
+    },
+    editCommentsLikes(state, newLikes) {
+      state.comments[newLikes.i].auth_like_id = newLikes.auth_like_id
+      state.comments[newLikes.i].likes_count = newLikes.likes_count
     }
   },
   actions: {
@@ -56,8 +83,26 @@ export default new Vuex.Store({
     changePostLikes({commit}, newLikes) {
       commit('editPostLikes', newLikes)
     },
+    changePostComments({commit}, newComments) {
+      commit('editPostComments', newComments)
+    },
+    changePostsLikes({commit}, newLikes) {
+      commit('editPostsLikes', newLikes)
+    },
+    changePostsComments({commit}, newComments) {
+      commit('editPostsComments', newComments)
+    },
+    deleteOnePost({commit}, newPosts) {
+      commit('deletePost', newPosts)
+    },
     changeComments({commit}, newComments) {
       commit('editComments', newComments)
+    },
+    deleteOneComment({commit}, newComments) {
+      commit('deleteComment', newComments)
+    },
+    changeCommentLikes({commit}, newLikes) {
+      commit('editCommentsLikes', newLikes)
     }
   }, 
   getters: {

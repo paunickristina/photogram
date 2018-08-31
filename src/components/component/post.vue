@@ -1,13 +1,13 @@
 <template>
   <article class="c-post">
-    <div v-for="(post, index) in posts" :key="index" class="c-post__wrapper">
+    <div v-for="(post, index) in allPosts" :key="index" class="c-post__wrapper">
       <router-link :to="{ name: 'user', params: {user_id: post.user_id}}" v-if="!userPage" class="c-post__header">
         <div class="c-post__header-img">
           <img :src="storage + post.user_image.profile" alt="">
         </div>
         <p>{{ post.username }}</p>
       </router-link>
-      <router-link tag="div" :to="{ name: photoRoute, params: {post_id: post.id, index: index} }" class="c-post__media">
+      <router-link tag="div" :to="{ name: photoRoute, params: {post_id: post.id, index: index, posts: posts} }" class="c-post__media">
         <div class="c-post__media-video" v-if="post.type_id === 2">
           <video controls>
             <source :src="storage + post.media" type="video/mp4">
@@ -92,11 +92,15 @@
   import { breakpoint, storage } from '../../functions.js'
 
   export default {
-    props: ['posts'],
+    props: ['posts', 'posts_count'],
     data() {
       return {
         reply_username: '',
-        comment_body: ''
+        comment_body: '',
+        allPosts: this.posts,
+        // allPosts: [],
+        decrementCount: 0,
+        test: this.posts_count
       }
     },
     computed: {
@@ -139,14 +143,20 @@
     },
     methods: {
       postComment(index) {
-        const post_id = this.posts[index].id
+        const post_id = this.allPosts[index].id
         axios.post('/comments', 
           {post_id: post_id, reply_username: this.reply_username, body: this.comment_body},
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          // console.log(response)
+          this.allPosts[index].comments.unshift(response.data.data)
+          const payload = {
+            i: index,
+            comments: this.allPosts[index].comments
+          }
+          this.$store.dispatch('changePostsComments', payload)
+          this.comment_body = ''
         })
         .catch(error => console.log(error))
 
@@ -173,40 +183,60 @@
         const $warning = $removeWarning.parents('.c-post__warning')
         $warning.removeClass('active')
       },
-      deletePost(index, event) {
-        event.stopPropagation()
-        const post_id = this.posts[index].id
-        axios.delete('/posts/' + post_id, {headers: {'Authorization': 'Bearer '+ this.token}}
-        )
+      deletePost(index, e) {
+        e.stopPropagation()
+        const post_id = this.allPosts[index].id
+        axios.delete('/posts/' + post_id, {headers: {'Authorization': 'Bearer '+ this.token}} )
         .then(response => {
           console.log(response)
+          this.allPosts.splice(index, 1)
+          const payload = {
+            posts: this.allPosts
+          }
+          this.$store.dispatch('deleteOnePost', payload)
+          this.hideRemoveWarning(e)
+
+          // this.test--
+          // this.$emit('deletedPost', this.test)
+
+          // this.decrementCount++
         })
         .catch(error => console.log(error))
       },
       postLike(index) {
-        const post_id = this.posts[index].id
+        const post_id = this.allPosts[index].id
         axios.post('/likes', 
           {likable_id: post_id, likable_type: 1},
           {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          // console.log(response)
+          const payload = {
+            i: index,
+            auth_like_id: response.data.data.id,
+            likes_count: this.allPosts[index].likes_count + 1
+          }
+          this.$store.dispatch('changePostsLikes', payload)
         })
         .catch(error => console.log(error))
       },
       deleteLike(index) {
-        const like_id = this.posts[index].auth_like_id
+        const like_id = this.allPosts[index].auth_like_id
         axios.delete('/likes/' + like_id, {headers: {'Authorization': 'Bearer '+ this.token}}
         )
         .then(response => {
-          console.log(response)
-          // this.$store.dispatch('getAllComments', this.comments)
+          // console.log(response)
+          const payload = {
+            i: index,
+            auth_like_id: null,
+            likes_count: this.allPosts[index].likes_count - 1
+          }
+          this.$store.dispatch('changePostsLikes', payload)
         })
         .catch(error => console.log(error))
       },
       authLike(index) {
-        return this.posts[index].auth_like_id == null
+        return this.allPosts[index].auth_like_id == null
       }
     }
   }
@@ -358,37 +388,39 @@
       @include fontSizeRem(20, 24);
       color: $white;
       background: $gray;
-      -webkit-transition: 0.15s all ease-in;
-      -moz-transition: 0.15s all ease-in;
-      -o-transition: 0.15s all ease-in;
-      transition: 0.15s all ease-in;
-      height: 0;
-      width: 0;
-      overflow: hidden;
+      height: 32rem;
+      // -webkit-transition: 0s all ease-in;
+      // -moz-transition: 0s all ease-in;
+      // -o-transition: 0s all ease-in;
+      // transition: 0s all ease-in;
+      // height: 0;
+      // width: 0;
+      // overflow: hidden;
+      display: none;
 
       &.active {
-        height: 32rem;
-        width: 100%;
-        
+        // height: 32rem;
+        // width: 100%;
+        display: block;
 
-        & .c-post__warning-content {
-          -webkit-transition: 0.3s all ease-in;
-          -moz-transition: 0.3s all ease-in;
-          -o-transition: 0.3s all ease-in;
-          transition: 0.3s all ease-in;
-          opacity: 1;
-        }
+        // & .c-post__warning-content {
+          // -webkit-transition: 0.3s all ease-in;
+          // -moz-transition: 0.3s all ease-in;
+          // -o-transition: 0.3s all ease-in;
+          // transition: 0.3s all ease-in;
+          // opacity: 1;
+        // }
       }
 
       &-content {
         width: 50%;
         margin: 11rem auto 0;
         text-align: center;
-        opacity: 0;
-        -webkit-transition: 0s all ease-in;
-        -moz-transition: 0s all ease-in;
-        -o-transition: 0s all ease-in;
-        transition: 0s all ease-in;
+        // opacity: 0;
+        // -webkit-transition: 0s all ease-in;
+        // -moz-transition: 0s all ease-in;
+        // -o-transition: 0s all ease-in;
+        // transition: 0s all ease-in;
 
         @include breakpoint(desktop) {
           width: 73%;

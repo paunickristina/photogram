@@ -1,5 +1,4 @@
 <template>
-	<!-- block or page -->
   <section class="p-terms">
 		<div class="main-wrapper">
 			<div class="p-terms__header">
@@ -123,5 +122,3 @@
 		}
 	}
 </style>
-
-
